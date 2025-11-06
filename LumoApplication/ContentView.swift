@@ -8,17 +8,32 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var appState: AppState
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        ZStack {
+            // HookView display first
+            if !appState.hasSeenHook {
+                HookView()
+                    .transition(.opacity)
+                    .zIndex(1)
+            }
+            
+            NavigationStack(path: $appState.path) {
+                Color.clear
+                .navigationDestination(for: String.self) { value in
+                    switch value {
+                    case "explore":
+                        ExploreView()
+                    case "summary":
+                        SummaryView()
+                    default:
+                        EmptyView()
+                    }
+                }
+            }
+            .opacity(appState.hasSeenHook ? 1 : 0)
         }
-        .padding()
+        .animation(.easeInOut(duration: 0.5), value: appState.hasSeenHook)
     }
-}
-
-#Preview {
-    ContentView()
 }

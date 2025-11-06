@@ -8,10 +8,13 @@
 import SwiftUI
 
 @main
-struct LumoApplicationApp: App {
+struct EmotionApp: App {
+    @StateObject var appState: AppState = AppState()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(appState)
         }
     }
 }
