@@ -1,0 +1,2158 @@
+[
+  {
+    "id": "sad",
+    "label": "Sad",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 0
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.0,
+    "aRaw": 0.0
+  },
+  {
+    "id": "downcast",
+    "label": "Downcast",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 0
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.077,
+    "aRaw": 0.0
+  },
+  {
+    "id": "gloomy",
+    "label": "Gloomy",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 0
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.154,
+    "aRaw": 0.0
+  },
+  {
+    "id": "melancholic",
+    "label": "Melancholic",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 0
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.231,
+    "aRaw": 0.0
+  },
+  {
+    "id": "miserable",
+    "label": "Miserable",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 0
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.308,
+    "aRaw": 0.0
+  },
+  {
+    "id": "dejected",
+    "label": "Dejected",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 0
+    },
+    "description": "I feel the weight of loss and I need gentle support.",
+    "vRaw": 0.385,
+    "aRaw": 0.0
+  },
+  {
+    "id": "despondent",
+    "label": "Despondent",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 0
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.462,
+    "aRaw": 0.0
+  },
+  {
+    "id": "forlorn",
+    "label": "Forlorn",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 1
+    },
+    "description": "I feel deeply alone and I cannot see where comfort will come from.",
+    "vRaw": 0.0,
+    "aRaw": 0.077
+  },
+  {
+    "id": "lonely",
+    "label": "Lonely",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 1
+    },
+    "description": "I feel apart from others and I miss real closeness.",
+    "vRaw": 0.077,
+    "aRaw": 0.077
+  },
+  {
+    "id": "isolated",
+    "label": "Isolated",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 1
+    },
+    "description": "I feel apart from others and I miss real closeness.",
+    "vRaw": 0.154,
+    "aRaw": 0.077
+  },
+  {
+    "id": "numb",
+    "label": "Numb",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 1
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.231,
+    "aRaw": 0.077
+  },
+  {
+    "id": "empty",
+    "label": "Empty",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 1
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.308,
+    "aRaw": 0.077
+  },
+  {
+    "id": "listless",
+    "label": "Listless",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 1
+    },
+    "description": "I feel mentally slow and my body wants to rest.",
+    "vRaw": 0.385,
+    "aRaw": 0.077
+  },
+  {
+    "id": "lethargic",
+    "label": "Lethargic",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 1
+    },
+    "description": "I feel low on energy and even simple tasks feel hard to start.",
+    "vRaw": 0.462,
+    "aRaw": 0.077
+  },
+  {
+    "id": "weary",
+    "label": "Weary",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 2
+    },
+    "description": "I feel fully spent and I cannot do more until I rest.",
+    "vRaw": 0.0,
+    "aRaw": 0.154
+  },
+  {
+    "id": "drained",
+    "label": "Drained",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 2
+    },
+    "description": "I feel fully spent and I cannot do more until I rest.",
+    "vRaw": 0.077,
+    "aRaw": 0.154
+  },
+  {
+    "id": "exhausted",
+    "label": "Exhausted",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 2
+    },
+    "description": "I feel fully spent and I cannot do more until I rest.",
+    "vRaw": 0.154,
+    "aRaw": 0.154
+  },
+  {
+    "id": "spent",
+    "label": "Spent",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 2
+    },
+    "description": "I feel fully spent and I cannot do more until I rest.",
+    "vRaw": 0.231,
+    "aRaw": 0.154
+  },
+  {
+    "id": "hopeless",
+    "label": "Hopeless",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 2
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.308,
+    "aRaw": 0.154
+  },
+  {
+    "id": "helpless",
+    "label": "Helpless",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 2
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.385,
+    "aRaw": 0.154
+  },
+  {
+    "id": "powerless",
+    "label": "Powerless",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 2
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.462,
+    "aRaw": 0.154
+  },
+  {
+    "id": "defeated",
+    "label": "Defeated",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 3
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.0,
+    "aRaw": 0.231
+  },
+  {
+    "id": "resigned",
+    "label": "Resigned",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 3
+    },
+    "description": "I feel the weight of loss and I need gentle support.",
+    "vRaw": 0.077,
+    "aRaw": 0.231
+  },
+  {
+    "id": "disappointed",
+    "label": "Disappointed",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 3
+    },
+    "description": "I feel let down because things did not work out as I hoped.",
+    "vRaw": 0.154,
+    "aRaw": 0.231
+  },
+  {
+    "id": "regretful",
+    "label": "Regretful",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 3
+    },
+    "description": "I feel sorry about what happened and I wish I could change it.",
+    "vRaw": 0.231,
+    "aRaw": 0.231
+  },
+  {
+    "id": "remorseful",
+    "label": "Remorseful",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 3
+    },
+    "description": "I feel sorry about what happened and I wish I could change it.",
+    "vRaw": 0.308,
+    "aRaw": 0.231
+  },
+  {
+    "id": "insecure",
+    "label": "Insecure",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 3
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.385,
+    "aRaw": 0.231
+  },
+  {
+    "id": "vulnerable",
+    "label": "Vulnerable",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 3
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.462,
+    "aRaw": 0.231
+  },
+  {
+    "id": "discouraged",
+    "label": "Discouraged",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 4
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.0,
+    "aRaw": 0.308
+  },
+  {
+    "id": "blue",
+    "label": "Blue",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 4
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.077,
+    "aRaw": 0.308
+  },
+  {
+    "id": "low",
+    "label": "Low",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 4
+    },
+    "description": "I feel mentally slow and my body wants to rest.",
+    "vRaw": 0.154,
+    "aRaw": 0.308
+  },
+  {
+    "id": "flat",
+    "label": "Flat",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 4
+    },
+    "description": "I feel mentally slow and my body wants to rest.",
+    "vRaw": 0.231,
+    "aRaw": 0.308
+  },
+  {
+    "id": "unmotivated",
+    "label": "Unmotivated",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 4
+    },
+    "description": "I feel no pull to act and I keep putting things off.",
+    "vRaw": 0.308,
+    "aRaw": 0.308
+  },
+  {
+    "id": "heartbroken",
+    "label": "Heartbroken",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 4
+    },
+    "description": "I feel deep pain from a loss that matters greatly to me.",
+    "vRaw": 0.385,
+    "aRaw": 0.308
+  },
+  {
+    "id": "homesick",
+    "label": "Homesick",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 4
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.462,
+    "aRaw": 0.308
+  },
+  {
+    "id": "neglected",
+    "label": "Neglected",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 5
+    },
+    "description": "I feel the weight of loss and I need gentle support.",
+    "vRaw": 0.0,
+    "aRaw": 0.385
+  },
+  {
+    "id": "abandoned",
+    "label": "Abandoned",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 5
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.077,
+    "aRaw": 0.385
+  },
+  {
+    "id": "timid",
+    "label": "Timid",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 5
+    },
+    "description": "I feel the weight of loss and I need gentle support.",
+    "vRaw": 0.154,
+    "aRaw": 0.385
+  },
+  {
+    "id": "withdrawn",
+    "label": "Withdrawn",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 5
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.231,
+    "aRaw": 0.385
+  },
+  {
+    "id": "bored",
+    "label": "Bored",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 5
+    },
+    "description": "I feel unstimulated and time moves very slowly.",
+    "vRaw": 0.308,
+    "aRaw": 0.385
+  },
+  {
+    "id": "apathetic",
+    "label": "Apathetic",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 5
+    },
+    "description": "I feel low on energy and even simple tasks feel hard to start.",
+    "vRaw": 0.385,
+    "aRaw": 0.385
+  },
+  {
+    "id": "pensive",
+    "label": "Pensive",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 5
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.462,
+    "aRaw": 0.385
+  },
+  {
+    "id": "glum",
+    "label": "Glum",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 6
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.0,
+    "aRaw": 0.462
+  },
+  {
+    "id": "foggy",
+    "label": "Foggy",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 6
+    },
+    "description": "I feel unclear in my head and thinking takes extra effort.",
+    "vRaw": 0.077,
+    "aRaw": 0.462
+  },
+  {
+    "id": "sluggish",
+    "label": "Sluggish",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 6
+    },
+    "description": "I move slowly and I cannot find much drive.",
+    "vRaw": 0.154,
+    "aRaw": 0.462
+  },
+  {
+    "id": "desolate",
+    "label": "Desolate",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 6
+    },
+    "description": "I feel low and I struggle to see things improving soon.",
+    "vRaw": 0.231,
+    "aRaw": 0.462
+  },
+  {
+    "id": "somber",
+    "label": "Somber",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 6
+    },
+    "description": "I feel the weight of loss and I need gentle support.",
+    "vRaw": 0.308,
+    "aRaw": 0.462
+  },
+  {
+    "id": "dismal",
+    "label": "Dismal",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 6
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.385,
+    "aRaw": 0.462
+  },
+  {
+    "id": "bleak",
+    "label": "Bleak",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 6
+    },
+    "description": "I feel a steady sadness and my mood stays heavy.",
+    "vRaw": 0.462,
+    "aRaw": 0.462
+  },
+  {
+    "id": "furious",
+    "label": "Furious",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 7
+    },
+    "description": "I feel extreme anger and it is hard to control what I might say or do.",
+    "vRaw": 0.0,
+    "aRaw": 0.538
+  },
+  {
+    "id": "enraged",
+    "label": "Enraged",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 7
+    },
+    "description": "I feel extreme anger and it is hard to control what I might say or do.",
+    "vRaw": 0.077,
+    "aRaw": 0.538
+  },
+  {
+    "id": "irate",
+    "label": "Irate",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 7
+    },
+    "description": "I feel strong anger and I want the problem to stop now.",
+    "vRaw": 0.154,
+    "aRaw": 0.538
+  },
+  {
+    "id": "livid",
+    "label": "Livid",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 7
+    },
+    "description": "I feel extreme anger and it is hard to control what I might say or do.",
+    "vRaw": 0.231,
+    "aRaw": 0.538
+  },
+  {
+    "id": "outraged",
+    "label": "Outraged",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 7
+    },
+    "description": "I feel heated and I struggle to keep my voice calm.",
+    "vRaw": 0.308,
+    "aRaw": 0.538
+  },
+  {
+    "id": "agitated",
+    "label": "Agitated",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 7
+    },
+    "description": "I feel pushed past my limit and I want change immediately.",
+    "vRaw": 0.385,
+    "aRaw": 0.538
+  },
+  {
+    "id": "tense",
+    "label": "Tense",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 7
+    },
+    "description": "I feel pushed past my limit and I want change immediately.",
+    "vRaw": 0.462,
+    "aRaw": 0.538
+  },
+  {
+    "id": "anxious",
+    "label": "Anxious",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 8
+    },
+    "description": "I feel uneasy and my mind keeps scanning for what could go wrong.",
+    "vRaw": 0.0,
+    "aRaw": 0.615
+  },
+  {
+    "id": "alarmed",
+    "label": "Alarmed",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 8
+    },
+    "description": "I feel sudden fear and my body jumps to alert.",
+    "vRaw": 0.077,
+    "aRaw": 0.615
+  },
+  {
+    "id": "panicked",
+    "label": "Panicked",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 8
+    },
+    "description": "I cannot think clearly because strong fear pushes me to act right now.",
+    "vRaw": 0.154,
+    "aRaw": 0.615
+  },
+  {
+    "id": "jittery",
+    "label": "Jittery",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 8
+    },
+    "description": "I feel shaky energy in my body and my hands do not stay still.",
+    "vRaw": 0.231,
+    "aRaw": 0.615
+  },
+  {
+    "id": "stressed",
+    "label": "Stressed",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 8
+    },
+    "description": "I feel pressure from too many demands at once and I cannot keep up.",
+    "vRaw": 0.308,
+    "aRaw": 0.615
+  },
+  {
+    "id": "overwhelmed",
+    "label": "Overwhelmed",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 8
+    },
+    "description": "I feel pressure from too many demands at once and I cannot keep up.",
+    "vRaw": 0.385,
+    "aRaw": 0.615
+  },
+  {
+    "id": "indignant",
+    "label": "Indignant",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 8
+    },
+    "description": "I feel angry because this is unfair and I want to stand up for myself.",
+    "vRaw": 0.462,
+    "aRaw": 0.615
+  },
+  {
+    "id": "impatient",
+    "label": "Impatient",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 9
+    },
+    "description": "I feel bothered and my patience wears thin quickly.",
+    "vRaw": 0.0,
+    "aRaw": 0.692
+  },
+  {
+    "id": "irritated",
+    "label": "Irritated",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 9
+    },
+    "description": "I feel bothered and my patience wears thin quickly.",
+    "vRaw": 0.077,
+    "aRaw": 0.692
+  },
+  {
+    "id": "annoyed",
+    "label": "Annoyed",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 9
+    },
+    "description": "I feel bothered and my patience wears thin quickly.",
+    "vRaw": 0.154,
+    "aRaw": 0.692
+  },
+  {
+    "id": "frustrated",
+    "label": "Frustrated",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 9
+    },
+    "description": "I feel blocked from progress and I need a clear path forward.",
+    "vRaw": 0.231,
+    "aRaw": 0.692
+  },
+  {
+    "id": "resentful",
+    "label": "Resentful",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 9
+    },
+    "description": "I feel pushed past my limit and I want change immediately.",
+    "vRaw": 0.308,
+    "aRaw": 0.692
+  },
+  {
+    "id": "defensive",
+    "label": "Defensive",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 9
+    },
+    "description": "I feel under attack and I prepare to protect my point.",
+    "vRaw": 0.385,
+    "aRaw": 0.692
+  },
+  {
+    "id": "hostile",
+    "label": "Hostile",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 9
+    },
+    "description": "I feel unfriendly and ready to push back hard.",
+    "vRaw": 0.462,
+    "aRaw": 0.692
+  },
+  {
+    "id": "provoked",
+    "label": "Provoked",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 10
+    },
+    "description": "I feel strong anger and I want the problem to stop now.",
+    "vRaw": 0.0,
+    "aRaw": 0.769
+  },
+  {
+    "id": "vexed",
+    "label": "Vexed",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 10
+    },
+    "description": "I feel bothered and my patience wears thin quickly.",
+    "vRaw": 0.077,
+    "aRaw": 0.769
+  },
+  {
+    "id": "on-edge",
+    "label": "On Edge",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 10
+    },
+    "description": "I feel jumpy and ready to react to any small trigger.",
+    "vRaw": 0.154,
+    "aRaw": 0.769
+  },
+  {
+    "id": "apprehensive",
+    "label": "Apprehensive",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 10
+    },
+    "description": "I feel nervous energy and I cannot settle my body.",
+    "vRaw": 0.231,
+    "aRaw": 0.769
+  },
+  {
+    "id": "worried",
+    "label": "Worried",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 10
+    },
+    "description": "I feel on edge and my thoughts speed up ahead of me.",
+    "vRaw": 0.308,
+    "aRaw": 0.769
+  },
+  {
+    "id": "shaken",
+    "label": "Shaken",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 10
+    },
+    "description": "I feel pushed past my limit and I want change immediately.",
+    "vRaw": 0.385,
+    "aRaw": 0.769
+  },
+  {
+    "id": "distressed",
+    "label": "Distressed",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 10
+    },
+    "description": "I feel pushed past my limit and I want change immediately.",
+    "vRaw": 0.462,
+    "aRaw": 0.769
+  },
+  {
+    "id": "restless",
+    "label": "Restless",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 11
+    },
+    "description": "I cannot relax or stay still and my legs want to move.",
+    "vRaw": 0.0,
+    "aRaw": 0.846
+  },
+  {
+    "id": "frazzled",
+    "label": "Frazzled",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 11
+    },
+    "description": "I feel strong anger and I want the problem to stop now.",
+    "vRaw": 0.077,
+    "aRaw": 0.846
+  },
+  {
+    "id": "heated",
+    "label": "Heated",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 11
+    },
+    "description": "I feel stirred up and my reactions come faster than I want.",
+    "vRaw": 0.154,
+    "aRaw": 0.846
+  },
+  {
+    "id": "worked-up",
+    "label": "Worked Up",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 11
+    },
+    "description": "I feel stirred up and my reactions come faster than I want.",
+    "vRaw": 0.231,
+    "aRaw": 0.846
+  },
+  {
+    "id": "panicky",
+    "label": "Panicky",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 11
+    },
+    "description": "I cannot think clearly because strong fear pushes me to act right now.",
+    "vRaw": 0.308,
+    "aRaw": 0.846
+  },
+  {
+    "id": "frantic",
+    "label": "Frantic",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 11
+    },
+    "description": "I rush from one thing to another and I fear I will not manage.",
+    "vRaw": 0.385,
+    "aRaw": 0.846
+  },
+  {
+    "id": "terrified",
+    "label": "Terrified",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 11
+    },
+    "description": "I feel extreme fear and I need safety right now.",
+    "vRaw": 0.462,
+    "aRaw": 0.846
+  },
+  {
+    "id": "fearful",
+    "label": "Fearful",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 12
+    },
+    "description": "I feel a sharp jolt of fear and my body tenses at once.",
+    "vRaw": 0.0,
+    "aRaw": 0.923
+  },
+  {
+    "id": "wound-up",
+    "label": "Wound Up",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 12
+    },
+    "description": "I feel stirred up and my reactions come faster than I want.",
+    "vRaw": 0.077,
+    "aRaw": 0.923
+  },
+  {
+    "id": "triggered",
+    "label": "Triggered",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 12
+    },
+    "description": "I feel heated and I struggle to keep my voice calm.",
+    "vRaw": 0.154,
+    "aRaw": 0.923
+  },
+  {
+    "id": "anguished",
+    "label": "Anguished",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 12
+    },
+    "description": "I feel heated and I struggle to keep my voice calm.",
+    "vRaw": 0.231,
+    "aRaw": 0.923
+  },
+  {
+    "id": "embarrassed",
+    "label": "Embarrassed",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 12
+    },
+    "description": "I believe I caused a problem and I want to make it right.",
+    "vRaw": 0.308,
+    "aRaw": 0.923
+  },
+  {
+    "id": "jealous",
+    "label": "Jealous",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 12
+    },
+    "description": "I feel upset because someone else has what I want and it stings.",
+    "vRaw": 0.385,
+    "aRaw": 0.923
+  },
+  {
+    "id": "envious",
+    "label": "Envious",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 12
+    },
+    "description": "I feel upset because someone else has what I want and it stings.",
+    "vRaw": 0.462,
+    "aRaw": 0.923
+  },
+  {
+    "id": "disgusted",
+    "label": "Disgusted",
+    "coord": {
+      "xIdx": 0,
+      "yIdx": 13
+    },
+    "description": "I feel a strong urge to reject this and turn away from it.",
+    "vRaw": 0.0,
+    "aRaw": 1.0
+  },
+  {
+    "id": "sceptical",
+    "label": "Sceptical",
+    "coord": {
+      "xIdx": 1,
+      "yIdx": 13
+    },
+    "description": "I feel pushed past my limit and I want change immediately.",
+    "vRaw": 0.077,
+    "aRaw": 1.0
+  },
+  {
+    "id": "dismayed",
+    "label": "Dismayed",
+    "coord": {
+      "xIdx": 2,
+      "yIdx": 13
+    },
+    "description": "I feel pushed past my limit and I want change immediately.",
+    "vRaw": 0.154,
+    "aRaw": 1.0
+  },
+  {
+    "id": "appalled",
+    "label": "Appalled",
+    "coord": {
+      "xIdx": 3,
+      "yIdx": 13
+    },
+    "description": "I feel heated and I struggle to keep my voice calm.",
+    "vRaw": 0.231,
+    "aRaw": 1.0
+  },
+  {
+    "id": "angry",
+    "label": "Angry",
+    "coord": {
+      "xIdx": 4,
+      "yIdx": 13
+    },
+    "description": "I feel strong anger and I want the problem to stop now.",
+    "vRaw": 0.308,
+    "aRaw": 1.0
+  },
+  {
+    "id": "uneasy",
+    "label": "Uneasy",
+    "coord": {
+      "xIdx": 5,
+      "yIdx": 13
+    },
+    "description": "I feel uneasy and my mind keeps scanning for what could go wrong.",
+    "vRaw": 0.385,
+    "aRaw": 1.0
+  },
+  {
+    "id": "perturbed",
+    "label": "Perturbed",
+    "coord": {
+      "xIdx": 6,
+      "yIdx": 13
+    },
+    "description": "I feel pushed past my limit and I want change immediately.",
+    "vRaw": 0.462,
+    "aRaw": 1.0
+  },
+  {
+    "id": "calm",
+    "label": "Calm",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 0
+    },
+    "description": "I feel at ease and I can rest without worry.",
+    "vRaw": 0.538,
+    "aRaw": 0.0
+  },
+  {
+    "id": "tranquil",
+    "label": "Tranquil",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 0
+    },
+    "description": "I feel at ease and I can rest without worry.",
+    "vRaw": 0.615,
+    "aRaw": 0.0
+  },
+  {
+    "id": "peaceful",
+    "label": "Peaceful",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 0
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.692,
+    "aRaw": 0.0
+  },
+  {
+    "id": "serene",
+    "label": "Serene",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 0
+    },
+    "description": "I feel relaxed and steady and nothing presses on me.",
+    "vRaw": 0.769,
+    "aRaw": 0.0
+  },
+  {
+    "id": "content",
+    "label": "Content",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 0
+    },
+    "description": "I feel at ease and I can rest without worry.",
+    "vRaw": 0.846,
+    "aRaw": 0.0
+  },
+  {
+    "id": "satisfied",
+    "label": "Satisfied",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 0
+    },
+    "description": "I feel relaxed and steady and nothing presses on me.",
+    "vRaw": 0.923,
+    "aRaw": 0.0
+  },
+  {
+    "id": "cosy",
+    "label": "Cosy",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 0
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 1.0,
+    "aRaw": 0.0
+  },
+  {
+    "id": "comfortable",
+    "label": "Comfortable",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 1
+    },
+    "description": "I feel balanced and steady and my body can soften now.",
+    "vRaw": 0.538,
+    "aRaw": 0.077
+  },
+  {
+    "id": "safe",
+    "label": "Safe",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 1
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.615,
+    "aRaw": 0.077
+  },
+  {
+    "id": "secure",
+    "label": "Secure",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 1
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.692,
+    "aRaw": 0.077
+  },
+  {
+    "id": "grounded",
+    "label": "Grounded",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 1
+    },
+    "description": "I feel steady and in control of myself with a clear mind.",
+    "vRaw": 0.769,
+    "aRaw": 0.077
+  },
+  {
+    "id": "centred",
+    "label": "Centred",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 1
+    },
+    "description": "I feel steady and in control of myself with a clear mind.",
+    "vRaw": 0.846,
+    "aRaw": 0.077
+  },
+  {
+    "id": "mellow",
+    "label": "Mellow",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 1
+    },
+    "description": "I feel balanced and steady and my body can soften now.",
+    "vRaw": 0.923,
+    "aRaw": 0.077
+  },
+  {
+    "id": "gentle",
+    "label": "Gentle",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 1
+    },
+    "description": "I feel balanced and steady and my body can soften now.",
+    "vRaw": 1.0,
+    "aRaw": 0.077
+  },
+  {
+    "id": "soothed",
+    "label": "Soothed",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 2
+    },
+    "description": "I feel calm and safe as my body relaxes and my mind becomes quiet.",
+    "vRaw": 0.538,
+    "aRaw": 0.154
+  },
+  {
+    "id": "settled",
+    "label": "Settled",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 2
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.615,
+    "aRaw": 0.154
+  },
+  {
+    "id": "at-ease",
+    "label": "At Ease",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 2
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.692,
+    "aRaw": 0.154
+  },
+  {
+    "id": "restful",
+    "label": "Restful",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 2
+    },
+    "description": "I feel slow and comfortable and I can take my time.",
+    "vRaw": 0.769,
+    "aRaw": 0.154
+  },
+  {
+    "id": "sleepy",
+    "label": "Sleepy",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 2
+    },
+    "description": "I feel heavy eyelids and my body is ready to drift into rest.",
+    "vRaw": 0.846,
+    "aRaw": 0.154
+  },
+  {
+    "id": "drowsy",
+    "label": "Drowsy",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 2
+    },
+    "description": "I feel heavy eyelids and my body is ready to drift into rest.",
+    "vRaw": 0.923,
+    "aRaw": 0.154
+  },
+  {
+    "id": "quiet",
+    "label": "Quiet",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 2
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 1.0,
+    "aRaw": 0.154
+  },
+  {
+    "id": "composed",
+    "label": "Composed",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 3
+    },
+    "description": "I feel steady and in control of myself with a clear mind.",
+    "vRaw": 0.538,
+    "aRaw": 0.231
+  },
+  {
+    "id": "balanced",
+    "label": "Balanced",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 3
+    },
+    "description": "I feel steady and in control of myself with a clear mind.",
+    "vRaw": 0.615,
+    "aRaw": 0.231
+  },
+  {
+    "id": "reflective",
+    "label": "Reflective",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 3
+    },
+    "description": "I feel relaxed and steady and nothing presses on me.",
+    "vRaw": 0.692,
+    "aRaw": 0.231
+  },
+  {
+    "id": "mindful",
+    "label": "Mindful",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 3
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.769,
+    "aRaw": 0.231
+  },
+  {
+    "id": "grateful",
+    "label": "Grateful",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 3
+    },
+    "description": "I feel warm care and I want to be close in a gentle way.",
+    "vRaw": 0.846,
+    "aRaw": 0.231
+  },
+  {
+    "id": "thankful",
+    "label": "Thankful",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 3
+    },
+    "description": "I feel kind warmth and I want to support someone I value.",
+    "vRaw": 0.923,
+    "aRaw": 0.231
+  },
+  {
+    "id": "affectionate",
+    "label": "Affectionate",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 3
+    },
+    "description": "I feel kind warmth and I want to support someone I value.",
+    "vRaw": 1.0,
+    "aRaw": 0.231
+  },
+  {
+    "id": "tender",
+    "label": "Tender",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 4
+    },
+    "description": "I feel relaxed and steady and nothing presses on me.",
+    "vRaw": 0.538,
+    "aRaw": 0.308
+  },
+  {
+    "id": "warm",
+    "label": "Warm",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 4
+    },
+    "description": "I feel warm care and I want to be close in a gentle way.",
+    "vRaw": 0.615,
+    "aRaw": 0.308
+  },
+  {
+    "id": "caring",
+    "label": "Caring",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 4
+    },
+    "description": "I feel warm care and I want to be close in a gentle way.",
+    "vRaw": 0.692,
+    "aRaw": 0.308
+  },
+  {
+    "id": "connected",
+    "label": "Connected",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 4
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.769,
+    "aRaw": 0.308
+  },
+  {
+    "id": "harmonious",
+    "label": "Harmonious",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 4
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.846,
+    "aRaw": 0.308
+  },
+  {
+    "id": "reassured",
+    "label": "Reassured",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 4
+    },
+    "description": "I feel relaxed and steady and nothing presses on me.",
+    "vRaw": 0.923,
+    "aRaw": 0.308
+  },
+  {
+    "id": "pacified",
+    "label": "Pacified",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 4
+    },
+    "description": "I feel relaxed and steady and nothing presses on me.",
+    "vRaw": 1.0,
+    "aRaw": 0.308
+  },
+  {
+    "id": "unwound",
+    "label": "Unwound",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 5
+    },
+    "description": "I feel slow and comfortable and I can take my time.",
+    "vRaw": 0.538,
+    "aRaw": 0.385
+  },
+  {
+    "id": "unhurried",
+    "label": "Unhurried",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 5
+    },
+    "description": "I feel slow and comfortable and I can take my time.",
+    "vRaw": 0.615,
+    "aRaw": 0.385
+  },
+  {
+    "id": "leisurely",
+    "label": "Leisurely",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 5
+    },
+    "description": "I feel slow and comfortable and I can take my time.",
+    "vRaw": 0.692,
+    "aRaw": 0.385
+  },
+  {
+    "id": "laid-back",
+    "label": "Laid-back",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 5
+    },
+    "description": "I feel at ease and I can rest without worry.",
+    "vRaw": 0.769,
+    "aRaw": 0.385
+  },
+  {
+    "id": "easygoing",
+    "label": "Easygoing",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 5
+    },
+    "description": "I feel balanced and steady and my body can soften now.",
+    "vRaw": 0.846,
+    "aRaw": 0.385
+  },
+  {
+    "id": "softened",
+    "label": "Softened",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 5
+    },
+    "description": "I feel relaxed and steady and nothing presses on me.",
+    "vRaw": 0.923,
+    "aRaw": 0.385
+  },
+  {
+    "id": "placated",
+    "label": "Placated",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 5
+    },
+    "description": "I feel balanced and steady and my body can soften now.",
+    "vRaw": 1.0,
+    "aRaw": 0.385
+  },
+  {
+    "id": "reposed",
+    "label": "Reposed",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 6
+    },
+    "description": "I feel balanced and steady and my body can soften now.",
+    "vRaw": 0.538,
+    "aRaw": 0.462
+  },
+  {
+    "id": "lulled",
+    "label": "Lulled",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 6
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.615,
+    "aRaw": 0.462
+  },
+  {
+    "id": "still",
+    "label": "Still",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 6
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.692,
+    "aRaw": 0.462
+  },
+  {
+    "id": "untroubled",
+    "label": "Untroubled",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 6
+    },
+    "description": "I feel safe and calm and my breath slows down on its own.",
+    "vRaw": 0.769,
+    "aRaw": 0.462
+  },
+  {
+    "id": "comforted",
+    "label": "Comforted",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 6
+    },
+    "description": "I feel at ease and I can rest without worry.",
+    "vRaw": 0.846,
+    "aRaw": 0.462
+  },
+  {
+    "id": "held-and-safe",
+    "label": "Held and Safe",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 6
+    },
+    "description": "I feel balanced and steady and my body can soften now.",
+    "vRaw": 0.923,
+    "aRaw": 0.462
+  },
+  {
+    "id": "easeful",
+    "label": "Easeful",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 6
+    },
+    "description": "I feel at ease and I can rest without worry.",
+    "vRaw": 1.0,
+    "aRaw": 0.462
+  },
+  {
+    "id": "exhilarated",
+    "label": "Exhilarated",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 7
+    },
+    "description": "I feel a powerful burst of joy and energy that makes me want to move now.",
+    "vRaw": 0.538,
+    "aRaw": 0.538
+  },
+  {
+    "id": "thrilled",
+    "label": "Thrilled",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 7
+    },
+    "description": "I feel a powerful burst of joy and energy that makes me want to move now.",
+    "vRaw": 0.615,
+    "aRaw": 0.538
+  },
+  {
+    "id": "elated",
+    "label": "Elated",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 7
+    },
+    "description": "I feel bright energy and clear joy that pulls me to join in.",
+    "vRaw": 0.692,
+    "aRaw": 0.538
+  },
+  {
+    "id": "energised",
+    "label": "Energised",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 7
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.769,
+    "aRaw": 0.538
+  },
+  {
+    "id": "lively",
+    "label": "Lively",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 7
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.846,
+    "aRaw": 0.538
+  },
+  {
+    "id": "animated",
+    "label": "Animated",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 7
+    },
+    "description": "I feel joyful momentum and I want to share it with others.",
+    "vRaw": 0.923,
+    "aRaw": 0.538
+  },
+  {
+    "id": "jubilant",
+    "label": "Jubilant",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 7
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 1.0,
+    "aRaw": 0.538
+  },
+  {
+    "id": "upbeat",
+    "label": "Upbeat",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 8
+    },
+    "description": "I feel lively and ready to act because this truly matters to me.",
+    "vRaw": 0.538,
+    "aRaw": 0.615
+  },
+  {
+    "id": "buoyant",
+    "label": "Buoyant",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 8
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.615,
+    "aRaw": 0.615
+  },
+  {
+    "id": "vibrant",
+    "label": "Vibrant",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 8
+    },
+    "description": "I feel bright energy and clear joy that pulls me to join in.",
+    "vRaw": 0.692,
+    "aRaw": 0.615
+  },
+  {
+    "id": "gleeful",
+    "label": "Gleeful",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 8
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.769,
+    "aRaw": 0.615
+  },
+  {
+    "id": "radiant",
+    "label": "Radiant",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 8
+    },
+    "description": "I feel bright energy and clear joy that pulls me to join in.",
+    "vRaw": 0.846,
+    "aRaw": 0.615
+  },
+  {
+    "id": "euphoric",
+    "label": "Euphoric",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 8
+    },
+    "description": "I feel a powerful burst of joy and energy that makes me want to move now.",
+    "vRaw": 0.923,
+    "aRaw": 0.615
+  },
+  {
+    "id": "pumped",
+    "label": "Pumped",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 8
+    },
+    "description": "I feel lively and ready to act because this truly matters to me.",
+    "vRaw": 1.0,
+    "aRaw": 0.615
+  },
+  {
+    "id": "motivated",
+    "label": "Motivated",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 9
+    },
+    "description": "I feel clear purpose and strong energy to turn ideas into action.",
+    "vRaw": 0.538,
+    "aRaw": 0.692
+  },
+  {
+    "id": "inspired",
+    "label": "Inspired",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 9
+    },
+    "description": "I feel pulled to explore and test ideas step by step.",
+    "vRaw": 0.615,
+    "aRaw": 0.692
+  },
+  {
+    "id": "adventurous",
+    "label": "Adventurous",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 9
+    },
+    "description": "I feel ready to try something new and I accept the risk that comes with it.",
+    "vRaw": 0.692,
+    "aRaw": 0.692
+  },
+  {
+    "id": "playful",
+    "label": "Playful",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 9
+    },
+    "description": "I feel light and playful and I want to laugh and try fun things.",
+    "vRaw": 0.769,
+    "aRaw": 0.692
+  },
+  {
+    "id": "delighted",
+    "label": "Delighted",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 9
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.846,
+    "aRaw": 0.692
+  },
+  {
+    "id": "confident",
+    "label": "Confident",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 9
+    },
+    "description": "I feel capable and ready to take on the next challenge.",
+    "vRaw": 0.923,
+    "aRaw": 0.692
+  },
+  {
+    "id": "optimistic",
+    "label": "Optimistic",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 9
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 1.0,
+    "aRaw": 0.692
+  },
+  {
+    "id": "curious",
+    "label": "Curious",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 10
+    },
+    "description": "I feel focused curiosity and I want to see how this works.",
+    "vRaw": 0.538,
+    "aRaw": 0.769
+  },
+  {
+    "id": "engaged",
+    "label": "Engaged",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 10
+    },
+    "description": "I feel focused curiosity and I want to see how this works.",
+    "vRaw": 0.615,
+    "aRaw": 0.769
+  },
+  {
+    "id": "spirited",
+    "label": "Spirited",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 10
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.692,
+    "aRaw": 0.769
+  },
+  {
+    "id": "cheerful",
+    "label": "Cheerful",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 10
+    },
+    "description": "I feel light and playful and I want to laugh and try fun things.",
+    "vRaw": 0.769,
+    "aRaw": 0.769
+  },
+  {
+    "id": "festive",
+    "label": "Festive",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 10
+    },
+    "description": "I feel bright energy and clear joy that pulls me to join in.",
+    "vRaw": 0.846,
+    "aRaw": 0.769
+  },
+  {
+    "id": "ecstatic",
+    "label": "Ecstatic",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 10
+    },
+    "description": "I feel joyful momentum and I want to share it with others.",
+    "vRaw": 0.923,
+    "aRaw": 0.769
+  },
+  {
+    "id": "giddy",
+    "label": "Giddy",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 10
+    },
+    "description": "I feel light and playful and I want to laugh and try fun things.",
+    "vRaw": 1.0,
+    "aRaw": 0.769
+  },
+  {
+    "id": "overjoyed",
+    "label": "Overjoyed",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 11
+    },
+    "description": "I feel a powerful burst of joy and energy that makes me want to move now.",
+    "vRaw": 0.538,
+    "aRaw": 0.846
+  },
+  {
+    "id": "bouncy",
+    "label": "Bouncy",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 11
+    },
+    "description": "I feel joyful momentum and I want to share it with others.",
+    "vRaw": 0.615,
+    "aRaw": 0.846
+  },
+  {
+    "id": "peppy",
+    "label": "Peppy",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 11
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.692,
+    "aRaw": 0.846
+  },
+  {
+    "id": "zesty",
+    "label": "Zesty",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 11
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.769,
+    "aRaw": 0.846
+  },
+  {
+    "id": "amped",
+    "label": "Amped",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 11
+    },
+    "description": "I feel lively and ready to act because this truly matters to me.",
+    "vRaw": 0.846,
+    "aRaw": 0.846
+  },
+  {
+    "id": "triumphant",
+    "label": "Triumphant",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 11
+    },
+    "description": "I feel solid self-trust after doing this well.",
+    "vRaw": 0.923,
+    "aRaw": 0.846
+  },
+  {
+    "id": "proud",
+    "label": "Proud",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 11
+    },
+    "description": "I feel capable and ready to take on the next challenge.",
+    "vRaw": 1.0,
+    "aRaw": 0.846
+  },
+  {
+    "id": "empowered",
+    "label": "Empowered",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 12
+    },
+    "description": "I feel capable and ready to take on the next challenge.",
+    "vRaw": 0.538,
+    "aRaw": 0.923
+  },
+  {
+    "id": "hopeful",
+    "label": "Hopeful",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 12
+    },
+    "description": "I feel bright energy and clear joy that pulls me to join in.",
+    "vRaw": 0.615,
+    "aRaw": 0.923
+  },
+  {
+    "id": "uplifted",
+    "label": "Uplifted",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 12
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.692,
+    "aRaw": 0.923
+  },
+  {
+    "id": "recharged",
+    "label": "Recharged",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 12
+    },
+    "description": "I feel strong positive energy and I want to take part with a smile.",
+    "vRaw": 0.769,
+    "aRaw": 0.923
+  },
+  {
+    "id": "alert",
+    "label": "Alert",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 12
+    },
+    "description": "I feel fully awake and quick to notice what changes around me.",
+    "vRaw": 0.846,
+    "aRaw": 0.923
+  },
+  {
+    "id": "focused",
+    "label": "Focused",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 12
+    },
+    "description": "I hold my attention steadily and I block out distractions to keep going.",
+    "vRaw": 0.923,
+    "aRaw": 0.923
+  },
+  {
+    "id": "eager",
+    "label": "Eager",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 12
+    },
+    "description": "I want to explore this more and I keep noticing fresh details.",
+    "vRaw": 1.0,
+    "aRaw": 0.923
+  },
+  {
+    "id": "ready",
+    "label": "Ready",
+    "coord": {
+      "xIdx": 7,
+      "yIdx": 13
+    },
+    "description": "I feel bright energy and clear joy that pulls me to join in.",
+    "vRaw": 0.538,
+    "aRaw": 1.0
+  },
+  {
+    "id": "bubbly",
+    "label": "Bubbly",
+    "coord": {
+      "xIdx": 8,
+      "yIdx": 13
+    },
+    "description": "I feel light and playful and I want to laugh and try fun things.",
+    "vRaw": 0.615,
+    "aRaw": 1.0
+  },
+  {
+    "id": "sunny",
+    "label": "Sunny",
+    "coord": {
+      "xIdx": 9,
+      "yIdx": 13
+    },
+    "description": "I feel joyful momentum and I want to share it with others.",
+    "vRaw": 0.692,
+    "aRaw": 1.0
+  },
+  {
+    "id": "vivacious",
+    "label": "Vivacious",
+    "coord": {
+      "xIdx": 10,
+      "yIdx": 13
+    },
+    "description": "I feel lively and ready to act because this truly matters to me.",
+    "vRaw": 0.769,
+    "aRaw": 1.0
+  },
+  {
+    "id": "zippy",
+    "label": "Zippy",
+    "coord": {
+      "xIdx": 11,
+      "yIdx": 13
+    },
+    "description": "I feel upbeat and my energy makes it easy to start and connect.",
+    "vRaw": 0.846,
+    "aRaw": 1.0
+  },
+  {
+    "id": "effervescent",
+    "label": "Effervescent",
+    "coord": {
+      "xIdx": 12,
+      "yIdx": 13
+    },
+    "description": "I feel joyful momentum and I want to share it with others.",
+    "vRaw": 0.923,
+    "aRaw": 1.0
+  },
+  {
+    "id": "keen",
+    "label": "Keen",
+    "coord": {
+      "xIdx": 13,
+      "yIdx": 13
+    },
+    "description": "I want to explore this more and I keep noticing fresh details.",
+    "vRaw": 1.0,
+    "aRaw": 1.0
+  }
+]

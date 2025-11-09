@@ -5,7 +5,19 @@
 //  Created by Quang Tu Nguyen on 6/11/2025.
 //
 
-struct Emotion: Codable, Identifiable {
-    var id: Int
-    var name: String
+import Foundation
+import SwiftUI
+
+struct GridCoord: Codable, Hashable {
+    let xIdx: Int
+    let yIdx: Int
 }
+
+struct Emotion: Identifiable, Codable, Hashable {
+    let id: String
+    let label: String
+    let coord: GridCoord
+    let description: String?
+    let vRaw: Double?
+    let aRaw: Double?
+}   

@@ -10,6 +10,12 @@ struct SmallBubble:View {
     let color: Color
     let size: CGFloat
     let emotionName: String
+    
+    init(color: Color, size: CGFloat = 200, emotionName: String) {
+        self.color = color
+        self.size = size
+        self.emotionName = emotionName
+    }
 
     var body: some View {
         ZStack{
@@ -19,11 +25,22 @@ struct SmallBubble:View {
                         gradient: Gradient(colors: [color]),
                         center: .center,
                         startRadius: 0,
-                        endRadius: size * 0.2
+                        endRadius: size * 0.9
                     )
                 )
                 .frame(width: size * 0.65, height: size * 0.65)
-                .blur(radius: size * 0.1)
+                .blur(radius: size * 0.14)
+            Circle()
+                .fill(
+                    RadialGradient(
+                        gradient: Gradient(colors: [color]),
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: size * 0.2
+                    )
+                )
+                .frame(width: size * 0.2, height: size * 0.2)
+                .blur(radius: size * 0.09)
             BubbleFrame(size: size)
             Text(emotionName)
                 .font(.system(size: size * 0.085,weight: .semibold))

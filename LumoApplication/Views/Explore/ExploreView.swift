@@ -40,11 +40,12 @@ struct ExploreView: View {
             }
             Spacer()
         }
-        .sheet(isPresented: $showTracking) {
-            TrackingView()
-        }
         .navigationBarBackButtonHidden(true) // Ẩn back button
         .interactiveDismissDisabled(true)   // Tắt swipe back (iOS 16+)
     }
 }
 
+
+#Preview {
+    ExploreView()
+}
