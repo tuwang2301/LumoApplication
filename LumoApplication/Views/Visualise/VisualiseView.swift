@@ -10,6 +10,9 @@ struct VisualiseView: View {
     @State private var fadingColors: Set<String> = []
     @State private var draggedBubble: (emotion: Emotion, offset: CGSize, position: CGPoint)?
     
+    @State private var cachedBackground = AnyView(StarBackground())
+
+    
     // Large bubble configuration
     private let largeBubbleSize: CGFloat = 400
     private let largeBubbleCenter: CGPoint
@@ -40,7 +43,7 @@ struct VisualiseView: View {
     
     var body: some View {
         ZStack {
-            StarBackground()
+            cachedBackground
             
             VStack(spacing: 0) {
                 Spacer()
@@ -127,25 +130,7 @@ struct VisualiseView: View {
                     y: dragged.position.y + dragged.offset.height
                 )
             }
-            
-            // Navigation bar
-            VStack {
-                HStack {
-                    Button(action: {
-                        // TODO: Back with confirmation if not all released
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding()
-                    }
-                    
-                    Spacer()
-                }
-                .padding(.horizontal)
-                
-                Spacer()
-            }
+        
         }
         .ignoresSafeArea()
     }

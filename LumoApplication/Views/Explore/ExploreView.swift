@@ -1,123 +1,223 @@
-////
-////  ExploreView.swift
-////  LumoApplication
-////
-////  Created by Quang Tu Nguyen on 6/11/2025.
-////
 //
-//import SwiftUI
+//  ContentView.swift
+//  AppleWatchHome
 //
-//struct ExploreView: View {
-//    @EnvironmentObject var appState : AppState
-//    @State private var showTracking = false
+//  Created by Pedro Rojas on 29/09/21.
 //
-//    var body: some View {
-//        VStack(spacing: 30) {
-//            HStack {
-//                Spacer()
-//                Button {
-//                    showTracking = true
-//                } label: {
-//                    Image(systemName: "chart.bar.xaxis")
-//                        .font(.title2)
-//                        .padding()
-//                }
-//            }
-//            
-//            Spacer()
-//            Text("Explore Your Emotions")
-//                .font(.largeTitle)
-//                .padding()
-//            
-//            Button {
-//                appState.path.append("summary") // push Summary
-//            } label: {
-//                Text("Choose Emotion → Summary")
-//                    .padding()
-//                    .background(Color.orange)
-//                    .foregroundColor(.white)
-//                    .cornerRadius(12)
-//            }
-//            Spacer()
-//        }
-//        .navigationBarBackButtonHidden(true) // Ẩn back button
-//        .interactiveDismissDisabled(true)   // Tắt swipe back (iOS 16+)
-//    }
-//}
-//
-//
-//#Preview {
-//    ExploreView()
-//}
 
 import SwiftUI
 
 struct ExploreView: View {
+    private static let size: CGFloat = 150
+    private static let spacingBetweenColumns: CGFloat = 0
+    private static let spacingBetweenRows: CGFloat = 0
+    private static let totalColumns: Int = 14
+    
+    @EnvironmentObject var appState: AppState
+    
+    @State private var cachedBackground = AnyView(StarBackground())
+    @State private var showHelp = false
+    
     // Load emotions from JSON
-    let emotions: [Emotion] = EmotionLoader.loadEmotions()
+    private let emotions: [Emotion] = EmotionLoader.loadEmotions()
     
-    // Bubble size for grid
-    private let bubbleSize: CGFloat = 120
-    private let spacing: CGFloat = 20
-    
+    private var emotionsGrid: [Emotion] {
+           emotions.sorted {
+               if $0.coord.yIdx != $1.coord.yIdx {
+                   return $0.coord.yIdx < $1.coord.yIdx   // top to bottom
+               } else {
+                   return $0.coord.xIdx < $1.coord.xIdx   // left to right
+               }
+           }
+       }
+
+    let gridItems = Array(
+        repeating: GridItem(
+            .fixed(size),
+            spacing: spacingBetweenColumns,
+            alignment: .center
+        ),
+        count: totalColumns
+    )
+
     var body: some View {
         ZStack {
-            // Star background
-            StarBackground()
-            
-            // Scrollable emotion grid
+            cachedBackground
+
             ScrollView([.horizontal, .vertical], showsIndicators: false) {
                 LazyVGrid(
-                    columns: Array(repeating: GridItem(.fixed(bubbleSize), spacing: spacing), count: 14),
-                    spacing: spacing
+                    columns: gridItems,
+                    alignment: .center,
+                    spacing: Self.spacingBetweenRows
                 ) {
-                    ForEach(emotions) { emotion in
-                        SmallBubble(
-                            color: EmotionPalette.shared.color(for: emotion),
-                            size: bubbleSize,
-                            emotionName: emotion.label
-                        )
-                        .onTapGesture {
-                            // TODO: Handle emotion selection
-                            print("Selected: \(emotion.label)")
+                    ForEach(Array(emotionsGrid.enumerated()), id: \.element.id) { index, emotion in
+                        GeometryReader { proxy in
+                            SmallBubble(
+                                color: EmotionPalette.shared.color(for: emotion),
+                                size: Self.size,
+                                emotionName: emotion.label
+                            )
+                                .scaleEffect(
+                                    scale(
+                                        proxy: proxy,
+                                        value: index
+                                    )
+                                )
+                                .offset(
+                                    x: offsetX(index),
+                                    y: 0
+                                )
                         }
+                        .onTapGesture(perform: {
+                            if(appState.selectedEmotions.count < 9) {
+                                appState.selectedEmotions.append(emotion)
+                            }
+                        })
+                        // You need to add height
+                        .frame(
+                            height: Self.size
+                        )
                     }
                 }
-                .padding(40)
-            }
-            
-            // Navigation bar
-            VStack {
-                HStack {
-                    Button(action: {
-                        // TODO: Back action
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding()
-                    }
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        // TODO: Info action
-                    }) {
-                        Image(systemName: "info.circle")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding()
-                    }
-                }
-                .padding(.horizontal)
-                
-                Spacer()
             }
         }
-        .ignoresSafeArea()
+        .toolbar {
+            // Right Button
+            ToolbarItem(placement: .navigationBarTrailing, ) {
+                   Button(action: {
+                       if appState.selectedEmotions.isEmpty {
+                           showHelp = true
+                       } else {
+                           appState.path.append("confirmation")
+                       }
+                   }) {
+                       Image("BlackHole")
+                           .resizable()
+                           .scaledToFit()
+                           .frame(width: 44, height: 44)
+                           .badge(count: appState.selectedEmotions.count)
+                   }
+                   .padding()
+                   .popover(isPresented: $showHelp) {
+                       Text("You need to select at least one emotion first.")
+                           .font(.body)
+                           .foregroundColor(.white)
+                           .padding()
+                           .presentationCompactAdaptation(.popover)
+                   }
+           }
+            
+        }
+        .toolbarBackground(.hidden, for: .navigationBar) // Ẩn background
+
+    }
+
+    
+    func offsetX(_ value: Int) -> CGFloat {
+        let rowNumber = value / gridItems.count
+
+        if rowNumber % 2 == 0 {
+            return Self.size/2 + Self.spacingBetweenColumns/2
+        }
+
+        return 0
+    }
+
+    var center: CGPoint {
+        CGPoint(
+            x: UIScreen.main.bounds.size.width*0.5,
+            y: UIScreen.main.bounds.size.height*0.5
+        )
+    }
+
+    func scale(proxy: GeometryProxy, value: Int) -> CGFloat {
+        let rowNumber = value / gridItems.count
+
+        // We need to consider the offset for even rows!
+        let x = (rowNumber % 2 == 0)
+        ? proxy.frame(in: .global).midX + Self.size/2 + Self.spacingBetweenColumns/2
+        : proxy.frame(in: .global).midX
+
+        let y = proxy.frame(in: .global).midY
+        let maxDistanceToCenter = getDistanceFromEdgeToCenter(x: x, y: y)
+
+        let currentPoint = CGPoint(x: x, y: y)
+        let distanceFromCurrentPointToCenter = distanceBetweenPoints(p1: center, p2: currentPoint)
+
+        // This creates a threshold for not just the pure center could get
+        // the max scaleValue.
+        let distanceDelta = min(
+            abs(distanceFromCurrentPointToCenter - maxDistanceToCenter),
+            maxDistanceToCenter*0.3
+        )
+
+        // Helps to get closer to scale 1.0 after the threshold.
+        let scalingFactor = 3.3
+        let scaleValue = distanceDelta/(maxDistanceToCenter) * scalingFactor
+
+        return scaleValue
+    }
+
+    func getDistanceFromEdgeToCenter(x: CGFloat, y: CGFloat) -> CGFloat {
+        let m = slope(p1: CGPoint(x: x, y: y), p2: center)
+        let currentAngle = angle(slope: m)
+
+        let edgeSlope = slope(p1: .zero, p2: center)
+        let deviceCornerAngle = angle(slope: edgeSlope)
+
+        if currentAngle > deviceCornerAngle {
+            let yEdge = (y > center.y) ? center.y*2 : 0
+            let xEdge = (yEdge - y)/m + x
+            let edgePoint = CGPoint(x: xEdge, y: yEdge)
+
+            return distanceBetweenPoints(p1: center, p2: edgePoint)
+        } else {
+            let xEdge = (x > center.x) ? center.x*2 : 0
+            let yEdge = m * (xEdge - x) + y
+            let edgePoint = CGPoint(x: xEdge, y: yEdge)
+
+            return distanceBetweenPoints(p1: center, p2: edgePoint)
+        }
+    }
+
+    func distanceBetweenPoints(p1: CGPoint, p2: CGPoint) -> CGFloat {
+        let xDistance = abs(p2.x - p1.x)
+        let yDistance = abs(p2.y - p1.y)
+
+        return CGFloat(
+            sqrt(
+                pow(xDistance, 2) + pow(yDistance, 2)
+            )
+        )
+    }
+
+    func slope(p1: CGPoint, p2: CGPoint) -> CGFloat {
+        return (p2.y - p1.y)/(p2.x - p1.x)
+    }
+
+    func angle(slope: CGFloat) -> CGFloat {
+        return abs(atan(slope) * 180 / .pi)
     }
 }
 
-#Preview {
+extension View {
+    func badge(count: Int) -> some View {
+        self.overlay(alignment: .topTrailing) {
+            if count > 0 {
+                Text("\(count)")
+                    .font(.caption2.bold())
+                    .foregroundColor(.white)
+                    .frame(minWidth: 18, minHeight: 18)
+                    .background(
+                        Circle()
+                            .fill(Color.red)
+                    )
+                    .offset(x: 0, y: 20)
+            }
+        }
+    }
+}
+
+#Preview{
     ExploreView()
 }
