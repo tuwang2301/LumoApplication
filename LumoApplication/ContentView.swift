@@ -19,8 +19,8 @@ struct ContentView: View {
                         ExploreView()
                             .toolbarBackground(.black, for: .navigationBar)
                             .toolbarColorScheme(.dark, for: .navigationBar)
-                    case "summary":
-                        SummaryView()
+                    case "confirmation":
+                        ConfirmEmotionsView()
                     case "visualise":
                         VisualiseView(selectedEmotions: appState.selectedEmotions)
                     default:

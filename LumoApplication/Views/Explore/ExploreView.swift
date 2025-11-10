@@ -15,6 +15,9 @@ struct ExploreView: View {
     
     @EnvironmentObject var appState: AppState
     
+    @State private var cachedBackground = AnyView(StarBackground())
+    @State private var showHelp = false
+    
     // Load emotions from JSON
     private let emotions: [Emotion] = EmotionLoader.loadEmotions()
     
@@ -39,10 +42,8 @@ struct ExploreView: View {
 
     var body: some View {
         ZStack {
-            StarBackground()
+            cachedBackground
 
-//            Axes()
-//                .edgesIgnoringSafeArea([.all])
             ScrollView([.horizontal, .vertical], showsIndicators: false) {
                 LazyVGrid(
                     columns: gridItems,
@@ -84,7 +85,11 @@ struct ExploreView: View {
             // Right Button
             ToolbarItem(placement: .navigationBarTrailing, ) {
                    Button(action: {
-                       appState.path.append("visualise")
+                       if appState.selectedEmotions.isEmpty {
+                           showHelp = true
+                       } else {
+                           appState.path.append("confirmation")
+                       }
                    }) {
                        Image("BlackHole")
                            .resizable()
@@ -93,6 +98,13 @@ struct ExploreView: View {
                            .badge(count: appState.selectedEmotions.count)
                    }
                    .padding()
+                   .popover(isPresented: $showHelp) {
+                       Text("You need to select at least one emotion first.")
+                           .font(.body)
+                           .foregroundColor(.white)
+                           .padding()
+                           .presentationCompactAdaptation(.popover)
+                   }
            }
             
         }
@@ -209,20 +221,3 @@ extension View {
 #Preview{
     ExploreView()
 }
-
-//struct Axes: View {
-//    var body: some View {
-//
-//        GeometryReader { geometry in
-//            Path { path in
-//                path.move(to: CGPoint(x: geometry.frame(in: .global).maxX, y: geometry.frame(in: .global).midY))
-//                path.addLine(to: CGPoint(x: 0, y: geometry.frame(in: .global).midY))
-//                path.move(to: CGPoint(x: geometry.frame(in: .global).midX, y: geometry.frame(in: .global).midY))
-//                path.addLine(to: CGPoint(x: geometry.frame(in: .global).midX, y: geometry.frame(in: .global).maxY))
-//
-//                path.addLine(to: CGPoint(x: geometry.frame(in: .global).midX, y: geometry.frame(in: .global).minY - 60))
-//            }
-//            .stroke(Color.blue, lineWidth: 3)
-//        }
-//    }
-//}
