@@ -40,7 +40,7 @@ struct LandingView: View {
                     .padding(.top, 4)
                 
                 
-                Image("lumologo")
+                Image("LumoLogo")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 200) // You can adjust this size
