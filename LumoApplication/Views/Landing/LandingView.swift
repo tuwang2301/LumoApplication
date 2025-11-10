@@ -2,23 +2,24 @@ import SwiftUI
 
 struct LandingView: View {
     @EnvironmentObject var appState: AppState
-    
+    @State private var showSettings = false // <-- 1. Add state
+
     var body: some View {
         ZStack {
-            // 1. Background
             StarBackground()
                 .ignoresSafeArea()
-            
-            AnimatedLightEffect()
-                            .ignoresSafeArea() // Make sure it fills the screen
 
-            // 2. Main Content
+            AnimatedLightEffect()
+                .ignoresSafeArea()
+
             VStack(spacing: 0) {
                 
                 // Settings Button
                 HStack {
                     Spacer()
-                    Button(action: { /* Settings action */ }) {
+                    Button(action: {
+                        showSettings = true // <-- 2. Toggle state
+                    }) {
                         Image(systemName: "gearshape.fill")
                             .font(.system(size: 22))
                             .foregroundStyle(Color.white)
@@ -27,32 +28,32 @@ struct LandingView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
                 
-                // --- MODIFICATION: Part 1 ---
-                // We add a Spacer here to push the text down a bit
-                // This gives it a more centered-feeling start.
                 Spacer()
                 
                 // Text Content
                 Text("Lumo")
                     .font(.system(size: 44, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.white)
-                
                 Text("Find Your Inner Cosmos")
                     .font(.system(size: 17, weight: .regular))
                     .foregroundStyle(Color.white.opacity(0.8))
                     .padding(.top, 4)
                 
                 
-                Spacer()
+                Image("LumoLogo")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 200) // You can adjust this size
+                                    .padding(.vertical, 70) // Adjust spacing above/below
                 
                 Text("Are you ready to explore your emotions?")
                     .font(.system(size: 22, weight: .medium))
                     .foregroundStyle(Color.white)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
+                    .padding(.horizontal, 30)
                 
                 // Get Started Button
-                Spacer().frame(height: 30)
+                Spacer().frame(height: 20)
                 
                 Button(action: {
                                     // 3. Programmatically navigate by updating the path
@@ -86,6 +87,9 @@ struct LandingView: View {
                             .padding(.top, 44)
                             .padding(.bottom, 34)
                         }
+        .sheet(isPresented: $showSettings) { // <-- 3. Add sheet
+                    SettingsView()
+                }
                     }
                 }
 

@@ -27,6 +27,12 @@ struct ContentView: View {
                         EmptyView()
                     }
                 }
+                .animation(.easeInOut(duration: 0.5), value: appState.hasSeenHook)
+                .onAppear {
+                    // When the app's main view appears,
+                    // request notification permission.
+                    NotificationManager.shared.requestPermission()
+                }
             }
             .tint(.white)
 //            .opacity(appState.hasSeenHook ? 1 : 0)
