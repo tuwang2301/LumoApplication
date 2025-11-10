@@ -48,7 +48,7 @@ struct VisualiseView: View {
             
             VStack(spacing: 0) {
                 Spacer()
-                    .frame(height: 100)
+                    .frame(height: 150)
                 
                 // Large bubble with animation
                 ZStack {
@@ -77,7 +77,7 @@ struct VisualiseView: View {
                 .frame(width: largeBubbleSize, height: largeBubbleSize)
                 
                 Spacer()
-                    .frame(height: 20)
+                    .frame(height: 5)
                 
                 // Small bubbles carousel
                 if !remainingEmotions.isEmpty {
@@ -96,17 +96,17 @@ struct VisualiseView: View {
                         onRelease: releaseEmotion
                     )
                     .frame(height: 180)
-                    .padding(.bottom,50)
+                    .padding(.bottom, 60)
                 } else {
                     VStack(spacing: 20) {
-                        Text("All emotions released")
+                        Text("Emotions are just visitors, let them come and go")
                             .font(.title2)
                             .foregroundColor(.white.opacity(0.8))
                         
                         Button(action: {
                             // TODO: Navigate back
                         }) {
-                            Text("Start Over")
+                            Text("Return to Home")
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 40)
@@ -121,7 +121,7 @@ struct VisualiseView: View {
                 }
                 
                 Spacer()
-                    .frame(minHeight: 20)  // 추가: 최소 하단 공간 확보
+                    .frame(minHeight: 20)
             }
             
             // Dragged bubble overlay
@@ -222,7 +222,7 @@ struct SmallBubbleCarousel: View {
                     )
                 }
             }
-            .padding(.vertical, 10)  // 추가: 상하 여백으로 잘림 방지
+            .padding(.vertical, 10)
         }
     }
 }
