@@ -22,19 +22,26 @@ struct ContentView: View {
             NavigationStack(path: $appState.path) {
                 Color.clear
                 LandingView()
-                .navigationDestination(for: String.self) { value in
-                    switch value {
-                    case "explore":
-                        ExploreView()
-                    case "summary":
-                        SummaryView()
-                    default:
-                        EmptyView()
+                    .navigationDestination(for: String.self) { value in
+                        switch value {
+                        case "explore":
+                            ExploreView()
+                        case "summary":
+                            SummaryView()
+                        default:
+                            EmptyView()
+                        }
                     }
-                }
             }
             .opacity(appState.hasSeenHook ? 1 : 0)
+            .animation(.easeInOut(duration: 0.5), value: appState.hasSeenHook)
+            .onAppear {
+                // When the app's main view appears,
+                // request notification permission.
+                NotificationManager.shared.requestPermission()
+            }
+            
         }
-        .animation(.easeInOut(duration: 0.5), value: appState.hasSeenHook)
     }
 }
+
