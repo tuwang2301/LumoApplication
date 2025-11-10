@@ -8,7 +8,7 @@ struct AboutView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     // --- Header ---
-                    Image("LumoLogo") // Use your app logo
+                    Image("lumologo") // Use your app logo
                         .resizable()
                         .scaledToFit()
                         .frame(width: 120, height: 120)
