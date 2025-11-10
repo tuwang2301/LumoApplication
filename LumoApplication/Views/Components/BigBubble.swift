@@ -1,66 +1,99 @@
 //
-//  BigBubble.swift
+//  BigBubbleCard.swift
 //  LumoApplication
-//
-//  Created by Ina Song on 8/11/2025.
 //
 
 import SwiftUI
 
-struct BigBubble:View {
+struct BigBubbleCard: View {
+    // Input
+    let emotion: Emotion
     let color: Color
-    let size: CGFloat
-    let emotionName: String
-    let emotionDescription: String
-    
-    init(color: Color, size: CGFloat = 500, emotionName: String, emotionDescription: String) {
-        self.color = color
-        self.size = size
-        self.emotionName = emotionName
-        self.emotionDescription = emotionDescription
-    }
+    var diameter: CGFloat = 300
+    var onAdd: (() -> Void)? = nil
+
+    // Computed
+    private var titleFontSize: CGFloat { diameter * 0.12 }
 
     var body: some View {
-        ZStack{
+        ZStack {
+            // Inner glow
             Circle()
                 .fill(
                     RadialGradient(
-                        gradient: Gradient(colors: [color]),
+                        colors: [color, .clear],
                         center: .center,
                         startRadius: 0,
-                        endRadius: size * 0.9
+                        endRadius: diameter * 0.6
                     )
                 )
-                .frame(width: size * 0.65, height: size * 0.65)
-                .blur(radius: size * 0.14)
-            Circle()
-                .fill(
-                    RadialGradient(
-                        gradient: Gradient(colors: [color]),
-                        center: .center,
-                        startRadius: 0,
-                        endRadius: size * 0.2
-                    )
-                )
-                .frame(width: size * 0.2, height: size * 0.2)
-                .blur(radius: size * 0.09)
-            BubbleFrame(size: size)
-            ZStack {
-                Text(emotionName)
-                    .font(.system(size: size * 0.085,weight: .semibold))
+                .blur(radius: diameter * 0.06)
+                .opacity(0.9)
+
+            // Glass frame
+            BubbleFrame(size: diameter)
+
+            // Content
+            VStack(spacing: diameter * 0.035) {
+                Text(emotion.label)
+                    .font(.system(size: diameter * 0.11, weight: .semibold, design: .rounded))
                     .foregroundColor(.white)
-                Text(emotionDescription)
-                    .font(.system(size: size * 0.02,weight: .semibold))
-                    .foregroundColor(.white)            }
+                    .shadow(radius: 2)
+
+                if let desc = emotion.description, desc.isEmpty == false {
+                    Text(desc)
+                        .font(.system(size: diameter * 0.05, weight: .medium))
+                        .foregroundColor(.white.opacity(0.92))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, diameter * 0.15)
+                        .padding(.vertical, diameter * 0.02)
+                        .accessibilityLabel(Text("Description"))
+                }
+
+                Button {
+                    onAdd?()
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: diameter * 0.06, weight: .semibold))
+                        .padding(diameter * 0.05)
+                        .foregroundColor(.white)
+                        .background(Circle().fill(Color.white.opacity(0.25)))
+                        .overlay(
+                            Circle().strokeBorder(Color.white.opacity(0.5), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text("Add emotion"))
+            }
+            .padding(.top, diameter * 0.12)
         }
+        .frame(width: diameter, height: diameter)
+        // Subtle tilt for depth
+        .rotation3DEffect(.degrees(6), axis: (x: 1, y: 0, z: 0))
+        .shadow(color: .black.opacity(0.35), radius: 16, x: 0, y: 8)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(Text(emotion.label))
     }
 }
 
 #Preview {
-    ZStack{
+    // Mock data for preview
+    let mock = Emotion(
+        id: "discouraged",
+        label: "Discouraged",
+        coord: GridCoord(xIdx: 0, yIdx: 4),
+        description: "I feel low and I struggle to see things improving soon.",
+        vRaw: 0.25,
+        aRaw: 0.308
+    )
+
+    return ZStack {
         StarBackground()
-        BigBubble(color: .blue.opacity(0.5),
-            emotionName: "Overwhelmed", emotionDescription: "I feel pressure from too many demands at once and I cannot keep up.")
+        BigBubbleCard(
+            emotion: mock,
+            color: Color.blue.opacity(0.55),
+            diameter: 320,
+            onAdd: { print("Added:", mock.label) }
+        )
     }
 }
-
