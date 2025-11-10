@@ -11,16 +11,7 @@ struct ContentView: View {
     @EnvironmentObject var appState: AppState
     
     var body: some View {
-        ZStack {
-            // HookView display first
-            if !appState.hasSeenHook {
-                HookView()
-                    .transition(.opacity)
-                    .zIndex(1)
-            }
-            
             NavigationStack(path: $appState.path) {
-                Color.clear
                 LandingView()
                 .navigationDestination(for: String.self) { value in
                     switch value {
@@ -38,8 +29,7 @@ struct ContentView: View {
                 }
             }
             .tint(.white)
-            .opacity(appState.hasSeenHook ? 1 : 0)
+//            .opacity(appState.hasSeenHook ? 1 : 0)
         }
-        .animation(.easeInOut(duration: 0.5), value: appState.hasSeenHook)
-    }
+//        .animation(.easeInOut(duration: 0.5), value: appState.hasSeenHook)
 }

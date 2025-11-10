@@ -10,5 +10,5 @@ import Combine
 class AppState: ObservableObject {
     @Published var hasSeenHook = false
     @Published var selectedEmotions: [Emotion] = []
-    @Published var path: [String] = ["explore"]
+    @Published var path: [String] = []
 }
