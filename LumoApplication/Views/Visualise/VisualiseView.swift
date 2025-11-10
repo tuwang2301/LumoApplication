@@ -4,6 +4,7 @@ struct VisualiseView: View {
     let selectedEmotions: [Emotion]
     
     // State management
+    @State private var bigBubbleFloat: CGFloat = 0
     @State private var remainingEmotions: [Emotion]
     @State private var releasedEmotions: [Emotion] = []
     @State private var currentPopupEmotion: String? = nil
@@ -59,11 +60,18 @@ struct VisualiseView: View {
                         .frame(width: 350, height: 350)
                         .clipShape(Circle())
                     }
-                    
+
                     BubbleFrame(size: largeBubbleSize)
-                    
+
                     if let emotionName = currentPopupEmotion {
                         EmotionNamePopup(emotionName: emotionName)
+                    }
+                }
+                .frame(width: largeBubbleSize, height: largeBubbleSize)
+                .offset(y: bigBubbleFloat)
+                .onAppear {
+                    withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
+                        bigBubbleFloat = -14
                     }
                 }
                 .frame(width: largeBubbleSize, height: largeBubbleSize)
