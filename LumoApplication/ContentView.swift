@@ -26,13 +26,18 @@ struct ContentView: View {
                     switch value {
                     case "explore":
                         ExploreView()
+                            .toolbarBackground(.black, for: .navigationBar)
+                            .toolbarColorScheme(.dark, for: .navigationBar)
                     case "summary":
                         SummaryView()
+                    case "visualise":
+                        VisualiseView(selectedEmotions: appState.selectedEmotions)
                     default:
                         EmptyView()
                     }
                 }
             }
+            .tint(.white)
             .opacity(appState.hasSeenHook ? 1 : 0)
         }
         .animation(.easeInOut(duration: 0.5), value: appState.hasSeenHook)
