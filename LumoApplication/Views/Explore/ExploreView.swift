@@ -1,108 +1,70 @@
-////
-////  ExploreView.swift
-////  LumoApplication
-////
-////  Created by Quang Tu Nguyen on 6/11/2025.
-////
-//
-//import SwiftUI
-//
-//struct ExploreView: View {
-//    @EnvironmentObject var appState : AppState
-//    @State private var showTracking = false
-//
-//    var body: some View {
-//        VStack(spacing: 30) {
-//            HStack {
-//                Spacer()
-//                Button {
-//                    showTracking = true
-//                } label: {
-//                    Image(systemName: "chart.bar.xaxis")
-//                        .font(.title2)
-//                        .padding()
-//                }
-//            }
-//            
-//            Spacer()
-//            Text("Explore Your Emotions")
-//                .font(.largeTitle)
-//                .padding()
-//            
-//            Button {
-//                appState.path.append("summary") // push Summary
-//            } label: {
-//                Text("Choose Emotion → Summary")
-//                    .padding()
-//                    .background(Color.orange)
-//                    .foregroundColor(.white)
-//                    .cornerRadius(12)
-//            }
-//            Spacer()
-//        }
-//        .navigationBarBackButtonHidden(true) // Ẩn back button
-//        .interactiveDismissDisabled(true)   // Tắt swipe back (iOS 16+)
-//    }
-//}
-//
-//
-//#Preview {
-//    ExploreView()
-//}
-
 import SwiftUI
 
 struct ExploreView: View {
     // Load emotions from JSON
-    let emotions: [Emotion] = EmotionLoader.loadEmotions()
-    
-    // Bubble size for grid
+    private let emotions: [Emotion] = EmotionLoader.loadEmotions()
+
+    // Grid config
+    private let gridCount: Int = 14
     private let bubbleSize: CGFloat = 120
     private let spacing: CGFloat = 20
-    
+    private let outerPadding: CGFloat = 40
+
+    // Sort by coord so row-major layout matches JSON
+    private var emotionsGrid: [Emotion] {
+        emotions.sorted {
+            if $0.coord.yIdx != $1.coord.yIdx {
+                return $0.coord.yIdx < $1.coord.yIdx   // top to bottom
+            } else {
+                return $0.coord.xIdx < $1.coord.xIdx   // left to right
+            }
+        }
+    }
+
+    // Ensure content is larger than the viewport so scrolling is enabled
+    private var contentWidth: CGFloat {
+        CGFloat(gridCount) * bubbleSize + CGFloat(gridCount - 1) * spacing + outerPadding * 2
+    }
+    private var contentHeight: CGFloat {
+        CGFloat(gridCount) * bubbleSize + CGFloat(gridCount - 1) * spacing + outerPadding * 2
+    }
+
     var body: some View {
         ZStack {
-            // Star background
             StarBackground()
-            
-            // Scrollable emotion grid
+
             ScrollView([.horizontal, .vertical], showsIndicators: false) {
                 LazyVGrid(
-                    columns: Array(repeating: GridItem(.fixed(bubbleSize), spacing: spacing), count: 14),
+                    columns: Array(repeating: GridItem(.fixed(bubbleSize), spacing: spacing), count: gridCount),
                     spacing: spacing
                 ) {
-                    ForEach(emotions) { emotion in
+                    ForEach(emotionsGrid) { emotion in
                         SmallBubble(
                             color: EmotionPalette.shared.color(for: emotion),
                             size: bubbleSize,
                             emotionName: emotion.label
                         )
                         .onTapGesture {
-                            // TODO: Handle emotion selection
                             print("Selected: \(emotion.label)")
                         }
                     }
                 }
-                .padding(40)
+                .padding(outerPadding)
+                // Make sure the grid has enough size to scroll in both axes
+                .frame(minWidth: contentWidth, minHeight: contentHeight, alignment: .topLeading)
             }
-            
-            // Navigation bar
+
+            // Top bar
             VStack {
                 HStack {
-                    Button(action: {
-                        // TODO: Back action
-                    }) {
+                    Button { /* back */ } label: {
                         Image(systemName: "chevron.left")
                             .font(.title2)
                             .foregroundColor(.white)
                             .padding()
                     }
-                    
                     Spacer()
-                    
-                    Button(action: {
-                        // TODO: Info action
-                    }) {
+                    Button { /* info */ } label: {
                         Image(systemName: "info.circle")
                             .font(.title2)
                             .foregroundColor(.white)
@@ -110,7 +72,6 @@ struct ExploreView: View {
                     }
                 }
                 .padding(.horizontal)
-                
                 Spacer()
             }
         }
