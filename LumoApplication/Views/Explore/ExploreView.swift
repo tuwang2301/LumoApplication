@@ -1,10 +1,4 @@
-//
-//  ContentView.swift
-//  AppleWatchHome
-//
-//  Created by Pedro Rojas on 29/09/21.
-//
-
+// applewatch
 import SwiftUI
 
 struct ExploreView: View {
@@ -17,19 +11,22 @@ struct ExploreView: View {
     
     @State private var cachedBackground = AnyView(StarBackground())
     @State private var showHelp = false
+    @State private var showMaxReached = false
+    @State private var showAlreadySelected = false
+    @State private var scrollViewProxy: ScrollViewProxy? = nil
     
     // Load emotions from JSON
     private let emotions: [Emotion] = EmotionLoader.loadEmotions()
     
     private var emotionsGrid: [Emotion] {
-           emotions.sorted {
-               if $0.coord.yIdx != $1.coord.yIdx {
-                   return $0.coord.yIdx < $1.coord.yIdx   // top to bottom
-               } else {
-                   return $0.coord.xIdx < $1.coord.xIdx   // left to right
-               }
-           }
-       }
+        emotions.sorted {
+            if $0.coord.yIdx != $1.coord.yIdx {
+                return $0.coord.yIdx < $1.coord.yIdx   // top to bottom
+            } else {
+                return $0.coord.xIdx < $1.coord.xIdx   // left to right
+            }
+        }
+    }
 
     let gridItems = Array(
         repeating: GridItem(
@@ -68,10 +65,22 @@ struct ExploreView: View {
                                     y: 0
                                 )
                         }
+                        .id(index)  // Add id for scroll positioning
                         .onTapGesture(perform: {
-                            if(appState.selectedEmotions.count < 9) {
-                                appState.selectedEmotions.append(emotion)
+                            // Check if already at max capacity
+                            if appState.selectedEmotions.count >= 8 {
+                                showMaxReached = true
+                                return
                             }
+                            
+                            // Check if already selected
+                            if appState.selectedEmotions.contains(where: { $0.id == emotion.id }) {
+                                showAlreadySelected = true
+                                return
+                            }
+                            
+                            // Add emotion
+                            appState.selectedEmotions.append(emotion)
                         })
                         // You need to add height
                         .frame(
@@ -79,37 +88,53 @@ struct ExploreView: View {
                         )
                     }
                 }
+                // FIX: Add padding so rightmost column can be centered
+                .padding(.horizontal, UIScreen.main.bounds.width / 4)
+                .padding(.vertical, UIScreen.main.bounds.height / 6)
             }
+            .defaultScrollAnchor(.center)  // Start at center
         }
         .toolbar {
             // Right Button
             ToolbarItem(placement: .navigationBarTrailing, ) {
-                   Button(action: {
-                       if appState.selectedEmotions.isEmpty {
-                           showHelp = true
-                       } else {
-                           appState.path.append("confirmation")
-                       }
-                   }) {
-                       Image("BlackHole")
-                           .resizable()
-                           .scaledToFit()
-                           .frame(width: 44, height: 44)
-                           .badge(count: appState.selectedEmotions.count)
-                   }
-                   .padding()
-                   .popover(isPresented: $showHelp) {
-                       Text("You need to select at least one emotion first.")
-                           .font(.body)
-                           .foregroundColor(.white)
-                           .padding()
-                           .presentationCompactAdaptation(.popover)
-                   }
-           }
-            
+                Button(action: {
+                    if appState.selectedEmotions.isEmpty {
+                        showHelp = true
+                    } else {
+                        appState.path.append("confirmation")
+                    }
+                }) {
+                    Image("BlackHole")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 44, height: 44)
+                        .badge(count: appState.selectedEmotions.count)
+                }
+                .padding()
+                .popover(isPresented: $showHelp) {
+                    Text("Please select at least one emotion.")
+                        .font(.body)
+                        .foregroundColor(.black)
+                        .padding()
+                        .presentationCompactAdaptation(.popover)
+                }
+                .popover(isPresented: $showMaxReached) {
+                    Text("Maximum 8 emotions can be selected.")
+                        .font(.body)
+                        .foregroundColor(.black)
+                        .padding()
+                        .presentationCompactAdaptation(.popover)
+                }
+                .popover(isPresented: $showAlreadySelected) {
+                    Text("This emotion is already selected.")
+                        .font(.body)
+                        .foregroundColor(.black)
+                        .padding()
+                        .presentationCompactAdaptation(.popover)
+                }
+            }
         }
-        .toolbarBackground(.hidden, for: .navigationBar) // Ẩn background
-
+        .toolbarBackground(.hidden, for: .navigationBar)
     }
 
     
