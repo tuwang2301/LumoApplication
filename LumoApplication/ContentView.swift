@@ -21,6 +21,7 @@ struct ContentView: View {
             
             NavigationStack(path: $appState.path) {
                 Color.clear
+                LandingView()
                 .navigationDestination(for: String.self) { value in
                     switch value {
                     case "explore":
