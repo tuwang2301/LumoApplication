@@ -18,6 +18,13 @@ struct ExploreView: View {
     // overlay timing control
     @State private var isPreparingOverlay = false    // stage A: recenter first, then open overlay
     
+    // axis indicator state
+    @State private var isScrolling = false
+    @State private var scrollTimer: Timer? = nil
+    @State private var centerEmotionCoord: GridCoord? = nil
+    @State private var cellPositions: [String: CGRect] = [:]
+    @State private var scrollOffset: CGPoint = .zero  // Track actual scroll position
+    
     // Load emotions from JSON
     private let emotions: [Emotion] = EmotionLoader.loadEmotions()
     
@@ -69,6 +76,14 @@ struct ExploreView: View {
                                         x: offsetX(index),
                                         y: 0
                                     )
+                                    .background(
+                                        GeometryReader { cellGeo in
+                                            Color.clear.preference(
+                                                key: CellPositionPreferenceKey.self,
+                                                value: [emotion.id: cellGeo.frame(in: .global)]
+                                            )
+                                        }
+                                    )
                             }
                             .overlay(
                                 Color.clear
@@ -99,6 +114,53 @@ struct ExploreView: View {
                     .padding(.vertical, UIScreen.main.bounds.height / 6)
                 }
                 .defaultScrollAnchor(.center)  // Start at center
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { _ in
+                            if !isScrolling {
+                                withAnimation(.easeIn(duration: 0.2)) {
+                                    isScrolling = true
+                                }
+                            }
+                            scrollTimer?.invalidate()
+                            // Update center emotion in real-time while scrolling
+                            updateCenterEmotionSmooth()
+                        }
+                        .onEnded { _ in
+                            scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
+                                withAnimation(.easeOut(duration: 0.25)) {
+                                    isScrolling = false
+                                }
+                            }
+                        }
+                )
+                .background(
+                    GeometryReader { scrollGeo in
+                        Color.clear
+                            .preference(
+                                key: ScrollPositionPreferenceKey.self,
+                                value: scrollGeo.frame(in: .global).midX
+                            )
+                            .onChange(of: scrollGeo.frame(in: .global)) { newFrame in
+                                if isScrolling {
+                                    // Update scroll offset continuously
+                                    scrollOffset = CGPoint(x: newFrame.midX, y: newFrame.midY)
+                                    updateCenterEmotionSmooth()
+                                }
+                            }
+                    }
+                )
+                .onPreferenceChange(ScrollPositionPreferenceKey.self) { _ in
+                    if isScrolling {
+                        updateCenterEmotion()
+                    }
+                }
+                .onPreferenceChange(CellPositionPreferenceKey.self) { positions in
+                    cellPositions = positions
+                    if isScrolling {
+                        updateCenterEmotion()
+                    }
+                }
 
                 // Overlay sits on top and fully hides the grid behind it
                 if let fe = focusedEmotion {
@@ -148,9 +210,31 @@ struct ExploreView: View {
                     )
                     .zIndex(100)
                     .transition(.scale.combined(with: .opacity))
+            }
+            }
+            .onAppear {
+                scrollViewProxy = proxy
+                // Initialize center emotion
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    updateCenterEmotion()
                 }
             }
-            .onAppear { scrollViewProxy = proxy }
+            .overlay(alignment: .bottomLeading) {
+                if isScrolling, !isPreparingOverlay, focusedEmotion == nil,
+                   let coord = centerEmotionCoord {
+                    XAxisIndicator(progress: Double(coord.xIdx) / 13.0)
+                        .padding(.bottom, 50)
+                        .transition(.opacity)
+                }
+            }
+            .overlay(alignment: .topLeading) {
+                if isScrolling, !isPreparingOverlay, focusedEmotion == nil,
+                   let coord = centerEmotionCoord {
+                    YAxisIndicator(progress: Double(coord.yIdx) / 13.0)
+                        .padding(.top, 60)
+                        .transition(.opacity)
+                }
+            }
         }
         .toolbar {
             // Right Button
@@ -269,6 +353,107 @@ struct ExploreView: View {
     }
     private func centerID(for index: Int) -> String { "center-\(index)" }
     
+    private func updateCenterEmotion() {
+        let screenCenter = CGPoint(
+            x: UIScreen.main.bounds.width / 2,
+            y: UIScreen.main.bounds.height / 2
+        )
+        
+        // Find emotion closest to screen center using actual positions
+        var closestEmotion: Emotion?
+        var minDistance: CGFloat = .infinity
+        
+        for emotion in emotionsGrid {
+            guard let frame = cellPositions[emotion.id] else { continue }
+            
+            let center = CGPoint(x: frame.midX, y: frame.midY)
+            let dist = distance(from: screenCenter, to: center)
+            
+            if dist < minDistance {
+                minDistance = dist
+                closestEmotion = emotion
+            }
+        }
+        
+        if let closest = closestEmotion {
+            withAnimation(.spring(response: 0.2, dampingFraction: 0.85)) {
+                centerEmotionCoord = closest.coord
+            }
+        }
+    }
+    
+    // Smooth continuous position update based on interpolation
+    private func updateCenterEmotionSmooth() {
+        let screenCenter = CGPoint(
+            x: UIScreen.main.bounds.width / 2,
+            y: UIScreen.main.bounds.height / 2
+        )
+        
+        // Find the 4 nearest emotions and interpolate
+        var nearestEmotions: [(emotion: Emotion, distance: CGFloat)] = []
+        
+        for emotion in emotionsGrid {
+            guard let frame = cellPositions[emotion.id] else { continue }
+            let center = CGPoint(x: frame.midX, y: frame.midY)
+            let dist = distance(from: screenCenter, to: center)
+            nearestEmotions.append((emotion, dist))
+        }
+        
+        nearestEmotions.sort { $0.distance < $1.distance }
+        
+        if nearestEmotions.count >= 4 {
+            // Get the 4 closest emotions
+            let closest = Array(nearestEmotions.prefix(4))
+            
+            // Calculate weighted average position
+            var totalWeight: CGFloat = 0
+            var weightedX: CGFloat = 0
+            var weightedY: CGFloat = 0
+            
+            for item in closest {
+                let weight = 1.0 / max(item.distance, 1.0) // Inverse distance weighting
+                totalWeight += weight
+                weightedX += CGFloat(item.emotion.coord.xIdx) * weight
+                weightedY += CGFloat(item.emotion.coord.yIdx) * weight
+            }
+            
+            if totalWeight > 0 {
+                let smoothX = weightedX / totalWeight
+                let smoothY = weightedY / totalWeight
+                
+                // Create interpolated coord
+                let interpolatedCoord = GridCoord(
+                    xIdx: Int(round(smoothX)),
+                    yIdx: Int(round(smoothY))
+                )
+                
+                // Update without animation for smooth continuous movement
+                centerEmotionCoord = interpolatedCoord
+            }
+        } else if let closest = nearestEmotions.first {
+            centerEmotionCoord = closest.emotion.coord
+        }
+    }
+    
+    private func distance(from p1: CGPoint, to p2: CGPoint) -> CGFloat {
+        let dx = p2.x - p1.x
+        let dy = p2.y - p1.y
+        return sqrt(dx*dx + dy*dy)
+    }
+}
+
+struct ScrollPositionPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+struct CellPositionPreferenceKey: PreferenceKey {
+    static var defaultValue: [String: CGRect] = [:]
+    static func reduce(value: inout [String: CGRect], nextValue: () -> [String: CGRect]) {
+        value.merge(nextValue()) { _, new in new }
+    }
 }
 
 extension View {
