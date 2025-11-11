@@ -22,7 +22,7 @@ struct LandingView: View {
                             .font(.system(size: 22))
                             .foregroundStyle(.white)
                             .padding(.trailing, 25)
-                            .padding(.top, -20)
+                            .padding(.top, -40)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .topTrailing)
