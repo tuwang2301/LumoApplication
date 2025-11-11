@@ -68,23 +68,14 @@ struct LandingView: View {
                     // This uses your AppState to navigate
                     appState.path.append("explore")
                 }) {
-                    // The content (label) of the button
-                    HStack {
-                        // The font is now controlled by your ButtonStyle
-                        Text("Get Started")
-                        Image(systemName: "arrow.right")
-                    }
-                    .frame(maxWidth: .infinity)
-                    // Use the vertical padding from your component
-                    .padding(.vertical, 12)
+                    ConfirmationLumoButton(
+                        text: "Get Started  →",
+                        isFullWidth: false,
+                        action: {
+                            appState.path.append("explore")
+                        }
+                    )
                 }
-                // 2. Apply your new custom style from Button.swift
-                .buttonStyle(LumoPrimaryCapsuleButton())
-                // 3. Keep the outer padding to inset it from the screen edges
-                .padding(.horizontal, 40)
-
-                // --- END OF MODIFICATION ---
-
                 
                 Spacer().frame(height: 50) // Bottom padding
             }
