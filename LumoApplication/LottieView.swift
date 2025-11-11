@@ -22,6 +22,8 @@ struct LottieView: UIViewRepresentable {
         animationView.contentMode = .scaleAspectFit
         animationView.loopMode = loopMode
         
+        animationView.animationSpeed = 0.5
+        
         // 3. Set background behavior
         // This makes it play even when the view updates
         animationView.backgroundBehavior = .pauseAndRestore

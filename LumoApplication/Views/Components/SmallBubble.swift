@@ -22,6 +22,17 @@ struct SmallBubble:View {
             Circle()
                 .fill(
                     RadialGradient(
+                        gradient: Gradient(colors: [color, color.opacity(0.3), .clear]),
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: size * 0.5
+                    )
+                )
+                .frame(width: size * 0.85, height: size * 0.85)
+                .blur(radius: size * 0.15)
+            Circle()
+                .fill(
+                    RadialGradient(
                         gradient: Gradient(colors: [color]),
                         center: .center,
                         startRadius: 0,
@@ -41,9 +52,20 @@ struct SmallBubble:View {
                 )
                 .frame(width: size * 0.2, height: size * 0.2)
                 .blur(radius: size * 0.09)
+            Circle()
+                .fill(
+                    RadialGradient(
+                        gradient: Gradient(colors: [.white.opacity(0.4), .clear]),
+                        center: UnitPoint(x: 0.35, y: 0.35),
+                        startRadius: 0,
+                        endRadius: size * 0.2
+                    )
+                )
+                .frame(width: size * 0.20, height: size * 0.20)
+                .blur(radius: size * 0.06)
             BubbleFrame(size: size)
             Text(emotionName)
-                .font(.system(size: size * 0.085,weight: .semibold))
+                .font(.system(size: size * 0.11,weight: .semibold))
                 .foregroundColor(.white)
 
         }
