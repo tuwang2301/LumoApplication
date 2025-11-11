@@ -22,6 +22,9 @@ struct FocusedEmotionOverlay: View {
     @State private var appear = false
     @State private var isEjecting = false
     
+    @State private var cachedBackground = AnyView(StarBackground())
+
+    
     init(
         emotion: Emotion,
         allEmotions: [Emotion],
@@ -48,8 +51,7 @@ struct FocusedEmotionOverlay: View {
     var body: some View {
         ZStack {
             // Fully hide ExploreView behind
-            Color.black.ignoresSafeArea()
-            StarBackground().ignoresSafeArea()
+            cachedBackground
             
             Color.clear
                     .contentShape(Rectangle())

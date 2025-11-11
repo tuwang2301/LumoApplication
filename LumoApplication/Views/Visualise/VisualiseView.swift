@@ -1,11 +1,11 @@
 import SwiftUI
 
 struct VisualiseView: View {
-    let selectedEmotions: [Emotion]
+    
+    @EnvironmentObject var appState: AppState
     
     // State management
     @State private var bigBubbleFloat: CGFloat = 0
-    @State private var remainingEmotions: [Emotion]
     @State private var currentPopupEmotion: String? = nil
     @State private var fadingColors: Set<String> = []
     @State private var draggedBubble: (emotion: Emotion, offset: CGSize, position: CGPoint)?
@@ -16,28 +16,21 @@ struct VisualiseView: View {
     
     // Large bubble configuration
     private let largeBubbleSize: CGFloat = 400
-    private let largeBubbleCenter: CGPoint
-    
-    init(selectedEmotions: [Emotion]) {
-        self.selectedEmotions = selectedEmotions
-        _remainingEmotions = State(initialValue: selectedEmotions)
-        
-        self.largeBubbleCenter = CGPoint(
-            x: 200,
-            y: 320
-        )
-    }
+    private let largeBubbleCenter: CGPoint = CGPoint(
+        x: 200,
+        y: 320
+    )
     
     // Active colors for animation
     var activeColors: [Color] {
-        remainingEmotions
+        appState.selectedEmotions
             .filter { !fadingColors.contains($0.id) }
             .map { EmotionPalette.shared.color(for: $0) }
     }
     
     // Fading colors for smooth removal animation
     var fadingColorsList: [Color] {
-        remainingEmotions
+        appState.selectedEmotions
             .filter { fadingColors.contains($0.id) }
             .map { EmotionPalette.shared.color(for: $0) }
     }
@@ -90,7 +83,7 @@ struct VisualiseView: View {
                 }
                 .frame(width: largeBubbleSize, height: largeBubbleSize)
 
-                if !remainingEmotions.isEmpty {
+                if !appState.selectedEmotions.isEmpty {
                     Spacer()
                         .frame(height: 5)
                 } else {
@@ -99,9 +92,9 @@ struct VisualiseView: View {
                 }
                 
                 // Small bubbles carousel
-                if !remainingEmotions.isEmpty {
+                if !appState.selectedEmotions.isEmpty {
                     SmallBubbleCarousel(
-                        emotions: remainingEmotions,
+                        emotions: appState.selectedEmotions,
                         largeBubbleCenter: largeBubbleCenter,
                         largeBubbleSize: largeBubbleSize,
                         onDragStart: { emotion, position in
@@ -131,7 +124,7 @@ struct VisualiseView: View {
                             .fixedSize(horizontal: false, vertical: true)
 
                         Button(action: {
-                            // TODO: Navigate back
+                            appState.path.removeAll()
                         }) {
                             Text("Return to Home")
                                 .font(.headline)
@@ -176,7 +169,7 @@ struct VisualiseView: View {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             withAnimation(.easeOut(duration: 0.3)) {
-                remainingEmotions.removeAll { $0.id == emotion.id }
+                appState.selectedEmotions.removeAll { $0.id == emotion.id }
                 fadingColors.remove(emotion.id)
             }
         }
@@ -318,7 +311,6 @@ struct DraggableSmallBubble: View {
             size: bubbleSize,
             emotionName: emotion.label
         )
-//        .offset(y: arcOffset)
         .opacity(isBeingDragged || isReleasing ? 0 : 1.0)
         .gesture(
             DragGesture(coordinateSpace: .global)
@@ -470,17 +462,4 @@ struct DynamicLightAnimation: View {
             }
         }
     }
-}
-
-// MARK: - Preview
-#Preview {
-    let sampleEmotions = [
-        Emotion(id: "anxious", label: "Anxious", coord: GridCoord(xIdx: 0, yIdx: 8), description: nil, vRaw: 0.0, aRaw: 0.615),
-        Emotion(id: "frustrated", label: "Frustrated", coord: GridCoord(xIdx: 3, yIdx: 9), description: nil, vRaw: 0.231, aRaw: 0.692),
-        Emotion(id: "joyful", label: "Joyful", coord: GridCoord(xIdx: 13, yIdx: 10), description: nil, vRaw: 1.0, aRaw: 0.769),
-        Emotion(id: "calm", label: "Calm", coord: GridCoord(xIdx: 7, yIdx: 0), description: nil, vRaw: 0.538, aRaw: 0.0),
-        Emotion(id: "a", label: "Calm", coord: GridCoord(xIdx: 9, yIdx: 0), description: nil, vRaw: 0.53, aRaw: 0.0)
-    ]
-    
-    VisualiseView(selectedEmotions: sampleEmotions)
 }

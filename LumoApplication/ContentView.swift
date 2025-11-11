@@ -22,7 +22,7 @@ struct ContentView: View {
                     case "confirmation":
                         ConfirmEmotionsView()
                     case "visualise":
-                        VisualiseView(selectedEmotions: appState.selectedEmotions)
+                        VisualiseView()
                     default:
                         EmptyView()
                     }
