@@ -1,4 +1,5 @@
 import SwiftUI
+import Lottie
 
 struct LandingView: View {
     @EnvironmentObject var appState: AppState
@@ -16,17 +17,17 @@ struct LandingView: View {
                 
                 // Settings Button
                 HStack {
-                    Spacer()
-                    Button(action: {
-                        showSettings = true // <-- 2. Toggle state
-                    }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 22))
-                            .foregroundStyle(Color.white)
-                    }
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
+                                    Spacer()
+                                    Button(action: {
+                                        showSettings = true
+                                    }) {
+                                        Image(systemName: "gearshape.fill")
+                                            .font(.system(size: 22))
+                                            .foregroundStyle(Color.white)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.top, 10)
                 
                 Spacer()
                 
@@ -40,7 +41,7 @@ struct LandingView: View {
                     .padding(.top, 4)
                 
                 
-                Image("LumoLogo")
+                Image("lumologo")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 200) // You can adjust this size
@@ -87,6 +88,13 @@ struct LandingView: View {
                             .padding(.top, 44)
                             .padding(.bottom, 34)
                         }
+        
+        .sheet(isPresented: $showSettings) {
+                    SettingsView()
+                        // Add this line to show the grabber:
+                        .presentationDragIndicator(.visible)
+                }
+        
         .sheet(isPresented: $showSettings) { // <-- 3. Add sheet
                     SettingsView()
                 }
