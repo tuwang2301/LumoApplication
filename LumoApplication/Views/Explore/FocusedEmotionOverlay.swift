@@ -10,6 +10,8 @@ struct FocusedEmotionOverlay: View {
     let onCloseAndCenterScroll: () -> Void       // center bubble tap
     let onAdd: () -> Void                         // plus tap
     let onNeighborSelect: (Emotion) -> Void       // neighbor tap
+    let canAdd: Bool
+    let onReject: (() -> Void)?
 
     // Visual params
     private let dimOpacity: Double = 0.35
@@ -18,6 +20,30 @@ struct FocusedEmotionOverlay: View {
 
     // fake zoom from center
     @State private var appear = false
+    @State private var isEjecting = false
+    
+    init(
+        emotion: Emotion,
+        allEmotions: [Emotion],
+        cellSize: CGSize,
+        bigDiameter: CGFloat,
+        onCloseAndCenterScroll: @escaping () -> Void,
+        onAdd: @escaping () -> Void,
+        onNeighborSelect: @escaping (Emotion) -> Void,
+        canAdd: Bool,
+        onReject: (() -> Void)? = nil
+    ) {
+        self.emotion = emotion
+        self.allEmotions = allEmotions
+        self.cellSize = cellSize
+        self.bigDiameter = bigDiameter
+        self.onCloseAndCenterScroll = onCloseAndCenterScroll
+        self.onAdd = onAdd
+        self.onNeighborSelect = onNeighborSelect
+        self.canAdd = canAdd
+        self.onReject = onReject
+    }
+
 
     var body: some View {
         ZStack {
@@ -43,25 +69,38 @@ struct FocusedEmotionOverlay: View {
                     .position(item.position)
                     .onTapGesture { onNeighborSelect(item.emotion) }
                 }
-            }.offset(y: -bigDiameter * 0.2)
+            }
+            .offset(y: -bigDiameter * 0.2)
+            .allowsHitTesting(!isEjecting)
+            
 
             // Center big bubble with fake zoom
             BigBubbleCard(
                 emotion: emotion,
                 color: EmotionPalette.shared.color(for: emotion),
                 diameter: bigDiameter,
-                onAdd: onAdd
+                onAdd: {
+                    guard canAdd else {
+                        onReject?()
+                        return
+                    }
+                    guard isEjecting == false else { return }
+                    isEjecting = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        onAdd()
+                    }
+                }
             )
-            .scaleEffect(appear ? 1.0 : 0.65)
+            .modifier(EjectToTopRight(isEjecting: isEjecting, bigDiameter: bigDiameter))
+            .scaleEffect(appear ? 1.0 : 0.45)
             .opacity(appear ? 1.0 : 0.0)
             .onAppear {
                 withAnimation(.spring(response: 0.55, dampingFraction: 0.88)) {
                     appear = true
                 }
             }
-            .onTapGesture {
-                onCloseAndCenterScroll()
-            }
+            .onTapGesture { if !isEjecting { onCloseAndCenterScroll() } }
+
         }
         .contentShape(Rectangle())
         .transition(.scale.combined(with: .opacity))
@@ -110,30 +149,20 @@ struct FocusedEmotionOverlay: View {
     }
 }
 
-#Preview {
-    let center = Emotion(id: "disconnected",
-                         label: "Disconnected",
-                         coord: GridCoord(xIdx: 7, yIdx: 7),
-                         description: "Feeling separate from others",
-                         vRaw: 0.3, aRaw: 0.28)
-
-    let others: [Emotion] = (0..<40).map { i in
-        Emotion(id: "e\(i)",
-                label: "E\(i)",
-                coord: GridCoord(xIdx: 3 + (i % 10), yIdx: 3 + (i / 10)),
-                description: nil, vRaw: 0.4, aRaw: 0.5)
-    }
-
-    return ZStack {
-        StarBackground()
-        FocusedEmotionOverlay(
-            emotion: center,
-            allEmotions: others + [center],
-            cellSize: .init(width: 150, height: 150),
-            bigDiameter: 320,
-            onCloseAndCenterScroll: {},
-            onAdd: {},
-            onNeighborSelect: { _ in }
-        )
+private struct EjectToTopRight: ViewModifier {
+    let isEjecting: Bool
+    let bigDiameter: CGFloat
+    func body(content: Content) -> some View {
+        // target margin
+        let m: CGFloat = 24
+        let targetX = UIScreen.main.bounds.width/2  - m
+        let targetY = -UIScreen.main.bounds.height/1.5
+        
+        return content
+            .offset(x: isEjecting ? targetX : 0,
+                    y: isEjecting ? targetY : 0)
+            .scaleEffect(isEjecting ? 0.45 : 1.0)
+            .opacity(isEjecting ? 0.0 : 1.0)
+            .animation(.spring(response: 0.33, dampingFraction: 0.74), value: isEjecting)
     }
 }

@@ -102,6 +102,8 @@ struct ExploreView: View {
 
                 // Overlay sits on top and fully hides the grid behind it
                 if let fe = focusedEmotion {
+                    let isMax = appState.selectedEmotions.count >= 8
+                    let isDup = appState.selectedEmotions.contains { $0.id == fe.id }
                     FocusedEmotionOverlay(
                         emotion: fe,
                         allEmotions: emotionsGrid,
@@ -137,6 +139,11 @@ struct ExploreView: View {
                         // neighbor tap => switch the overlay focus immediately
                         onNeighborSelect: { newEmotion in
                             withAnimation(.spring()) { focusedEmotion = newEmotion }
+                        },
+                        canAdd: !(isMax || isDup),
+                        onReject: {
+                            if isMax { showMaxReached = true }
+                            else if isDup { showAlreadySelected = true }
                         }
                     )
                     .zIndex(100)
