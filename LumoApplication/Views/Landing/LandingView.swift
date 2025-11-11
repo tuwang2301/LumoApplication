@@ -1,123 +1,105 @@
 import SwiftUI
-import Lottie
 
 struct LandingView: View {
     @EnvironmentObject var appState: AppState
-    @State private var showSettings = false // <-- 1. Add state
+    
+    // This state controls the settings sheet
+    @State private var showSettings = false
 
     var body: some View {
         ZStack {
+            // Layer 1: Star Background
             StarBackground()
                 .ignoresSafeArea()
 
+            // Layer 2: Animated Light Effect
             AnimatedLightEffect()
                 .ignoresSafeArea()
 
+            // Layer 3: Main Content
             VStack(spacing: 0) {
-<<<<<<< HEAD
-                // Settings button (top-right)
-                ZStack(alignment: .topTrailing) {
+                
+                // --- Settings Button (Top Right) ---
+                HStack {
+                    Spacer()
                     Button(action: {
-                        showSettings = true
+                        showSettings = true // This opens the sheet
                     }) {
                         Image(systemName: "gearshape.fill")
                             .font(.system(size: 22))
-                            .foregroundStyle(.white)
-                            .padding(.trailing, 25)
-                            .padding(.top, -40)
+                            .foregroundStyle(Color.white)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .topTrailing)
-
-=======
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
                 
-                // Settings Button
-                HStack {
-                                    Spacer()
-                                    Button(action: {
-                                        showSettings = true
-                                    }) {
-                                        Image(systemName: "gearshape.fill")
-                                            .font(.system(size: 22))
-                                            .foregroundStyle(Color.white)
-                                    }
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.top, 10)
-                
->>>>>>> parent of f03157a (Lending Page Update)
                 Spacer()
                 
-                // Text Content
+                // --- Text Content ---
                 Text("Lumo")
                     .font(.system(size: 44, weight: .bold, design: .rounded))
                     .foregroundStyle(Color.white)
+                
                 Text("Find Your Inner Cosmos")
-                    .font(.system(size: 17, weight: .regular))
+                    .font(.system(size: 17, weight: .regular, design: .default))
                     .foregroundStyle(Color.white.opacity(0.8))
                     .padding(.top, 4)
                 
-                
+                // --- Your Logo ---
                 Image("lumologo")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 200) // You can adjust this size
-                                    .padding(.vertical, 70) // Adjust spacing above/below
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 250)
+                    .padding(.vertical, 60)
                 
-                Text("Are you ready to explore your emotions?")
-                    .font(.system(size: 22, weight: .medium))
+                // --- Prompt Text ---
+                Text("Hi, Are you ready to explore your emotions?")
+                    .font(.system(size: 22, weight: .medium, design: .default))
                     .foregroundStyle(Color.white)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 30)
+                    .padding(.horizontal, 40)
                 
-                // Get Started Button
-                Spacer().frame(height: 20)
+                
+                // --- 1. THIS IS THE MODIFIED BLOCK ---
+                
+                Spacer().frame(height: 30)
                 
                 Button(action: {
-                                    // 3. Programmatically navigate by updating the path
-                                    appState.path.append("explore")
-                                }) {
-                                    // Your button's style (no NavigationLink needed)
-                                    HStack {
-                                        Text("Get Started")
-                                            .font(.system(size: 18, weight: .semibold, design: .default))
-                                        Image(systemName: "arrow.right")
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(
-                                        LinearGradient(
-                                            colors: [
-                                                Color.blue.opacity(0.7),
-                                                Color.purple.opacity(0.7)
-                                            ],
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .foregroundStyle(Color.white)
-                                    .clipShape(Capsule())
-                                }
-                                .padding(.horizontal, 40)
-                                
-                                Spacer().frame(height: 50) // Bottom padding
-                            }
-                            .padding(.top, 44)
-                            .padding(.bottom, 34)
-                        }
-        
-        .sheet(isPresented: $showSettings) {
-                    SettingsView()
-                        // Add this line to show the grabber:
-                        .presentationDragIndicator(.visible)
-                }
-        
-        .sheet(isPresented: $showSettings) { // <-- 3. Add sheet
-                    SettingsView()
-                }
+                    // This uses your AppState to navigate
+                    appState.path.append("explore")
+                }) {
+                    // The content (label) of the button
+                    HStack {
+                        // The font is now controlled by your ButtonStyle
+                        Text("Get Started")
+                        Image(systemName: "arrow.right")
                     }
+                    .frame(maxWidth: .infinity)
+                    // Use the vertical padding from your component
+                    .padding(.vertical, 12)
                 }
+                // 2. Apply your new custom style from Button.swift
+                .buttonStyle(LumoPrimaryCapsuleButton())
+                // 3. Keep the outer padding to inset it from the screen edges
+                .padding(.horizontal, 40)
+
+                // --- END OF MODIFICATION ---
+
+                
+                Spacer().frame(height: 50) // Bottom padding
+            }
+            .padding(.top, 44)
+            .padding(.bottom, 34)
+        }
+        // --- Settings Sheet Modifier ---
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+                .presentationDragIndicator(.visible)
+        }
+    }
+}
 
 #Preview {
     LandingView()
+        .environmentObject(AppState())
 }
