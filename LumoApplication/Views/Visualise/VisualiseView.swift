@@ -45,7 +45,12 @@ struct VisualiseView: View {
     
     var body: some View {
         ZStack {
+            Color.black
+                .ignoresSafeArea()
+
+            // Star field fills full screen too
             cachedBackground
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 Spacer()
@@ -86,9 +91,13 @@ struct VisualiseView: View {
                 }
                 .frame(width: largeBubbleSize, height: largeBubbleSize)
 
-                
-                Spacer()
-                    .frame(height: 5)
+                if !remainingEmotions.isEmpty {
+                    Spacer()
+                        .frame(height: 5)
+                } else {
+                    Spacer()
+                        .frame(height: 50) // or 60–80 if you want more breathing room
+                }
                 
                 // Small bubbles carousel
                 if !remainingEmotions.isEmpty {
@@ -110,10 +119,11 @@ struct VisualiseView: View {
                     .padding(.bottom, 50)
                 } else {
                     VStack(spacing: 60) {
-                        Text("Emotions are just visitors, let them come and go")
+                        Text("\"Emotions are just visitors,\nlet them come and go\"")
                             .font(.title3)
                             .foregroundColor(.white.opacity(0.8))
                             .multilineTextAlignment(.center)
+                            .lineSpacing(10)
                             .padding(.horizontal, 32)
                             .frame(maxWidth: .infinity)
                             .fixedSize(horizontal: false, vertical: true)
@@ -132,7 +142,7 @@ struct VisualiseView: View {
                                 )
                         }
                     }
-                    .padding(.bottom, 60)
+                    .padding(.bottom, 20)
                 }
                 
                 Spacer()
