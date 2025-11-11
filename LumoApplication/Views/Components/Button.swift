@@ -1,40 +1,34 @@
-//
-//  Button.swift
-//  LumoApplication
-//
-//  Created by Surface on 11/11/2025.
-//
-
 import SwiftUI
 
 // MARK: - Reusable Lumo Button
-
 struct ConfirmationLumoButton: View {
     let text: String
+    var isFullWidth: Bool = false // <-- ADD THIS
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Text(text)
+                // Frame is now flexible
+                .frame(maxWidth: isFullWidth ? .infinity : nil)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 12)
-                .frame(width: 180, height: 50)
         }
         .buttonStyle(LumoPrimaryCapsuleButton())
     }
 }
 
 // MARK: - Glass Capsule Style
-
 struct LumoPrimaryCapsuleButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         let isPressed = configuration.isPressed
 
         return configuration.label
-            .font(.headline)
+            .font(.headline) // <-- Moved font here
             .background(
                 Capsule()
                     .fill(.ultraThinMaterial)
+                    // ... (rest of your style code is perfect, no change needed)
                     .background(
                         Capsule()
                             .fill(
@@ -74,16 +68,3 @@ struct LumoPrimaryCapsuleButton: ButtonStyle {
             .animation(.spring(response: 0.25, dampingFraction: 0.8), value: isPressed)
     }
 }
-
-// MARK: - Preview
-
-#Preview {
-    
-        ConfirmationLumoButton(text: "Let them flow") {
-            print("Flow tapped")
-        }
-    
-    .padding(1000)
-    .background(Color.black.ignoresSafeArea())
-}
-
