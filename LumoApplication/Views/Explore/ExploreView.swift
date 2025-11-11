@@ -141,7 +141,7 @@ struct ExploreView: View {
                                 key: ScrollPositionPreferenceKey.self,
                                 value: scrollGeo.frame(in: .global).midX
                             )
-                            .onChange(of: scrollGeo.frame(in: .global)) { newFrame in
+                            .onChange(of: scrollGeo.frame(in: .global)) { oldFrame, newFrame in
                                 if isScrolling {
                                     // Update scroll offset continuously
                                     scrollOffset = CGPoint(x: newFrame.midX, y: newFrame.midY)
