@@ -53,9 +53,15 @@ class NotificationManager {
         scheduleNotification(hour: 20, minute: 0, identifier: "evening")
     }
     
-    // 4. Cancel All Notifications
-    func cancelAllNotifications() {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        print("All pending notifications cancelled.")
+    func cancelNotification(identifier: String) {
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
+            print("Cancelled notification: \(identifier)")
+        }
+        
+        // 5. --- CANCEL ALL NOTIFICATIONS ---
+        func cancelAllNotifications() {
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+            print("All pending notifications cancelled.")
+        }
+
     }
-}
