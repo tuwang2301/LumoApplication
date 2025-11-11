@@ -28,7 +28,7 @@ struct XAxisIndicator: View {
                         .font(.system(size: 8))
                         .foregroundColor(.white.opacity(0.4))
                 }
-                .offset(x: startX, y: 39)
+                .offset(x: startX, y: 43)
                 
                 // Labels below axis
                 HStack {
@@ -52,7 +52,7 @@ struct XAxisIndicator: View {
                     .scaledToFit()
                     .frame(width: 40, height: 40)
                     .shadow(color: .black.opacity(0.5), radius: 3)
-                    .position(x: starX, y: 39)
+                    .position(x: starX, y: 45)
             }
         }
         .frame(height: 60)
