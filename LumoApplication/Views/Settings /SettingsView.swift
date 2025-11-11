@@ -15,6 +15,7 @@ struct SettingsView: View {
             ZStack {
                 Color.black.ignoresSafeArea()
                 
+                // Use a List for the modern iOS settings look
                 List {
                     
                     // --- REMINDERS SECTION ---
@@ -30,19 +31,22 @@ struct SettingsView: View {
                         .tint(.green)
                         .onChange(of: enableReminders) {
                             if enableReminders {
+                                // Request permission and sync
                                 NotificationManager.shared.requestPermission()
                                 reminderStore.syncNotifications()
                             } else {
+                                // This requires 'cancelAllNotifications()' to exist
                                 NotificationManager.shared.cancelAllNotifications()
                             }
                         }
                         
                         // --- DYNAMIC LIST OF REMINDERS ---
                         if enableReminders {
+                            // We loop over the reminders in the store
                             ForEach($reminderStore.reminders) { $reminder in
                                 reminderRow(for: $reminder)
                             }
-                            .onDelete(perform: deleteReminder)
+                            .onDelete(perform: deleteReminder) // <-- Swipe to delete
                             
                             // --- "Add Reminder" BUTTON ---
                             Button(action: addReminder) {
@@ -57,9 +61,12 @@ struct SettingsView: View {
                     
                     // --- APP SETTINGS SECTION ---
                     Section("App Settings") {
+                        
+                        // --- THIS IS THE CHANGE ---
                         NavigationLink(destination: HelpAndSupportView()) {
-                            SettingsRow(icon: "questionmark.circle.fill", text: "Help & Support")
+                            SettingsRow(icon: "questionmark.circle.fill", text: "FAQ") // Renamed
                         }
+                        // --- END OF CHANGE ---
                         
                         NavigationLink(destination: AboutView()) {
                             SettingsRow(icon: "info.circle.fill", text: "About")
@@ -67,17 +74,21 @@ struct SettingsView: View {
                     }
                     .listRowBackground(Color.gray.opacity(0.15))
                 }
-                .listStyle(.insetGrouped)
-                .scrollContentBackground(.hidden)
+                .listStyle(.insetGrouped) // Use the inset grouped style
+                .scrollContentBackground(.hidden) // Make list bg transparent
                 .navigationTitle("Settings")
                 .navigationBarTitleDisplayMode(.inline)
                 .preferredColorScheme(.dark)
             }
         }
         .sheet(item: $reminderToEdit) { reminder in
+            // This sheet is triggered when reminderToEdit is set
+            // We must find the *binding* to the reminder in the store
             if let index = reminderStore.reminders.firstIndex(where: { $0.id == reminder.id }) {
+                // Pass the binding to the sheet
                 CustomizeScheduleView(reminder: $reminderStore.reminders[index])
                     .onDisappear {
+                        // When the sheet is closed, save and sync all changes
                         reminderStore.save()
                     }
             }
@@ -92,28 +103,33 @@ struct SettingsView: View {
             
             Spacer()
             
+            // This toggle updates the .isEnabled property on the Reminder
             Toggle("", isOn: reminder.isEnabled)
                 .tint(.blue)
                 .onChange(of: reminder.wrappedValue.isEnabled) {
+                    // Save and sync when this toggle is flipped
                     reminderStore.save()
                 }
         }
-        .contentShape(Rectangle())
+        .contentShape(Rectangle()) // Make the whole row tappable
         .onTapGesture {
+            // Tapping the row (not the toggle) opens the edit sheet
             reminderToEdit = reminder.wrappedValue
         }
     }
     
     // --- Helper Functions for Add/Delete ---
     func addReminder() {
-        let newReminder = Reminder(hour: 12, minute: 0)
+        let newReminder = Reminder(hour: 12, minute: 0) // Default to 12:00 PM
         reminderStore.add(reminder: newReminder)
+        // Immediately open the edit sheet for the new reminder
         reminderToEdit = newReminder
     }
     
     func deleteReminder(at offsets: IndexSet) {
         for index in offsets {
             let reminder = reminderStore.reminders[index]
+            // This calls the store's delete, which also cancels the notification
             reminderStore.delete(reminder: reminder)
         }
     }
@@ -141,14 +157,11 @@ struct SettingsView: View {
                     Text(value)
                         .foregroundStyle(.gray)
                 }
-                
-               
             }
             .padding(.vertical, 8)
         }
     }
 }
-
 #Preview {
     SettingsView()
 }
