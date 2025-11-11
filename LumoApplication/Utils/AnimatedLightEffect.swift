@@ -9,22 +9,22 @@ struct AnimatedLightEffect: View {
             // This circle will move from top-right to bottom-left
             Circle()
                 .fill(Color.blue.opacity(0.5)) // Low opacity
-                .frame(width: 150) // Large size
-                .blur(radius: 20) // Very blurred
+                .frame(width: 400) // Large size
+                .blur(radius: 120) // Very blurred
                 .offset(
-                    x: animate ? -20 : 20,
-                    y: animate ? -15 : 15
+                    x: animate ? -200 : 200,
+                    y: animate ? -150 : 150
                 )
             
             // Light 2: Purple
             // This circle will move from top-left to bottom-right
             Circle()
                 .fill(Color.purple.opacity(0.5))
-                .frame(width: 150)
-                .blur(radius: 20)
+                .frame(width: 350)
+                .blur(radius: 100)
                 .offset(
-                    x: animate ? 15 : -15,
-                    y: animate ? 20 : -20
+                    x: animate ? 150 : -150,
+                    y: animate ? 200 : -200
                 )
         }
         .onAppear {
