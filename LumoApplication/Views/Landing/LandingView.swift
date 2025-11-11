@@ -46,7 +46,7 @@ struct LandingView: View {
                 .offset(y: showLogo ? 0 : 20)
                 
                 // --- Prompt Text ---
-                Text("Are you ready to explore your emotions?") // Your new text
+                Text("How are you feeling right now?") // Your new text
                     .font(.system(size: 32, weight: .medium, design: .default)) // Your new font
                     .foregroundStyle(Color.white)
                     .multilineTextAlignment(.center)
@@ -59,7 +59,7 @@ struct LandingView: View {
                 Spacer().frame(height: 90) // Your new spacer
                 
                 ConfirmationLumoButton(
-                    text: "Get Started  →",
+                    text: "Explore Emotions →",
                     isFullWidth: false,
                     action: {
                         appState.path.append("explore")
