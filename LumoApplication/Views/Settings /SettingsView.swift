@@ -4,199 +4,120 @@ struct SettingsView: View {
     // 1. State
     @AppStorage("enableReminders") private var enableReminders = true
     
-    // 2. AppStorage for each reminder time
-    @AppStorage("morningHour") private var morningHour = 9
-    @AppStorage("morningMinute") private var morningMinute = 0
+    // 2. The new source of truth for our list
+    @StateObject private var reminderStore = ReminderStore()
     
-    @AppStorage("afternoonHour") private var afternoonHour = 14
-    @AppStorage("afternoonMinute") private var afternoonMinute = 0
-    
-    @AppStorage("eveningHour") private var eveningHour = 20
-    @AppStorage("eveningMinute") private var eveningMinute = 0
-    
-    // 3. State to trigger the sheet
-    @State private var customizingIdentifier: String?
+    // 3. State to trigger the edit sheet
+    @State private var reminderToEdit: Reminder?
     
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.black.ignoresSafeArea()
                 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
+                List {
+                    
+                    // --- REMINDERS SECTION ---
+                    Section(
+                        header: Text("Reminders").font(.headline),
+                        footer: Text("Add or edit your daily check-in reminders.")
+                    ) {
+                        // Main Enable Toggle
+                        Toggle(isOn: $enableReminders) {
+                            Text("Enable Reminders")
+                                .font(.headline)
+                        }
+                        .tint(.green)
+                        .onChange(of: enableReminders) {
+                            if enableReminders {
+                                NotificationManager.shared.requestPermission()
+                                reminderStore.syncNotifications()
+                            } else {
+                                NotificationManager.shared.cancelAllNotifications()
+                            }
+                        }
                         
-                        reminderSection
-                        
-                        Text("App Settings")
-                            .font(.headline)
-                            .foregroundStyle(.gray)
-                            .padding(.horizontal)
-                        
-                        appSettingsSection
-                        
-                        Spacer()
-                        
-                        Text("Version 1.1.0 Lumo")
-                            .font(.caption)
-                            .foregroundStyle(.gray)
-                            .frame(maxWidth: .infinity, alignment: .center)
+                        // --- DYNAMIC LIST OF REMINDERS ---
+                        if enableReminders {
+                            ForEach($reminderStore.reminders) { $reminder in
+                                reminderRow(for: $reminder)
+                            }
+                            .onDelete(perform: deleteReminder)
+                            
+                            // --- "Add Reminder" BUTTON ---
+                            Button(action: addReminder) {
+                                HStack {
+                                    Image(systemName: "plus.circle.fill")
+                                    Text("Add Reminder")
+                                }
+                            }
+                        }
                     }
+                    .listRowBackground(Color.gray.opacity(0.15))
+                    
+                    // --- APP SETTINGS SECTION ---
+                    Section("App Settings") {
+                        NavigationLink(destination: HelpAndSupportView()) {
+                            SettingsRow(icon: "questionmark.circle.fill", text: "Help & Support")
+                        }
+                        
+                        NavigationLink(destination: AboutView()) {
+                            SettingsRow(icon: "info.circle.fill", text: "About")
+                        }
+                    }
+                    .listRowBackground(Color.gray.opacity(0.15))
                 }
-                .padding(.top)
+                .listStyle(.insetGrouped)
+                .scrollContentBackground(.hidden)
                 .navigationTitle("Settings")
                 .navigationBarTitleDisplayMode(.inline)
                 .preferredColorScheme(.dark)
             }
         }
-        // 4. Sheet Modifier
-        .sheet(item: $customizingIdentifier) { identifier in
-            switch identifier {
-            case "morning":
-                CustomizeScheduleView(
-                    identifier: "morning",
-                    hour: $morningHour, // Pass binding
-                    minute: $morningMinute // Pass binding
-                )
-            case "afternoon":
-                CustomizeScheduleView(
-                    identifier: "afternoon",
-                    hour: $afternoonHour,
-                    minute: $afternoonMinute
-                )
-            case "evening":
-                CustomizeScheduleView(
-                    identifier: "evening",
-                    hour: $eveningHour,
-                    minute: $eveningMinute
-                )
-            default:
-                EmptyView()
-            }
-        }
-    }
-    
-    // --- REMINDERS VIEW ---
-    var reminderSection: some View {
-        VStack(spacing: 16) {
-            Toggle(isOn: $enableReminders) {
-                HStack {
-                    Image(systemName: "bell.fill")
-                        .font(.title3)
-                        .foregroundStyle(.white)
-                        .frame(width: 32, height: 32)
-                        .background(Color.purple.opacity(0.6), in: Circle())
-                    
-                    VStack(alignment: .leading) {
-                        Text("Enable Reminders")
-                        Text("Stay connected with your feelings")
-                            .font(.caption)
-                            .foregroundStyle(.gray)
+        .sheet(item: $reminderToEdit) { reminder in
+            if let index = reminderStore.reminders.firstIndex(where: { $0.id == reminder.id }) {
+                CustomizeScheduleView(reminder: $reminderStore.reminders[index])
+                    .onDisappear {
+                        reminderStore.save()
                     }
-                }
-            }
-            .tint(.green)
-            .onChange(of: enableReminders) {
-                if enableReminders {
-                    // 1. Request permission (which also schedules defaults)
-                    NotificationManager.shared.requestPermission()
-                } else {
-                    // 2. Cancel all notifications
-                    NotificationManager.shared.cancelAllNotifications()
-                }
-            }
-            
-            // --- PRESET TIMES (Only show if reminders are on) ---
-            if enableReminders {
-                presetTimeRow(
-                    icon: "sun.max.fill",
-                    label: "Morning",
-                    hour: morningHour, // Pass value
-                    minute: morningMinute // Pass value
-                )
-                .onTapGesture {
-                    customizingIdentifier = "morning" // Set identifier to show sheet
-                }
-                
-                presetTimeRow(
-                    icon: "cloud.sun.fill",
-                    label: "Afternoon",
-                    hour: afternoonHour,
-                    minute: afternoonMinute
-                )
-                .onTapGesture {
-                    customizingIdentifier = "afternoon"
-                }
-                
-                presetTimeRow(
-                    icon: "moon.fill",
-                    label: "Evening",
-                    hour: eveningHour,
-                    minute: eveningMinute
-                )
-                .onTapGesture {
-                    customizingIdentifier = "evening"
-                }
             }
         }
-        .padding()
-        .background(
-            LinearGradient(
-                colors: [Color.purple.opacity(0.4), Color.blue.opacity(0.2)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .cornerRadius(20)
-        .padding(.horizontal)
     }
     
-    // --- APP SETTINGS VIEW ---
-    var appSettingsSection: some View {
-        VStack(spacing: 8) {
-            // REMOVED: Language row is gone
-            
-            // 2. Help & Support (Links to new HelpAndSupportView)
-            NavigationLink(destination: HelpAndSupportView()) {
-                SettingsRow(icon: "questionmark.circle.fill", text: "Help & Support")
-            }
-            
-            // 3. About (Navigates to AboutView)
-            NavigationLink(destination: AboutView()) {
-                SettingsRow(icon: "info.circle.fill", text: "About")
-            }
-        }
-        .padding()
-        .background(Color.gray.opacity(0.15))
-        .cornerRadius(20)
-        .padding(.horizontal)
-    }
-    
-    // --- Helper for formatting time ---
-    private func formatTime(hour: Int, minute: Int) -> String {
-        let calendar = Calendar.current
-        let date = calendar.date(bySettingHour: hour, minute: minute, second: 0, of: Date())!
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
-    
-    // --- Modified Row View ---
-    func presetTimeRow(icon: String, label: String, hour: Int, minute: Int) -> some View {
+    // --- View for a single reminder row ---
+    func reminderRow(for reminder: Binding<Reminder>) -> some View {
         HStack {
-            Image(systemName: icon)
-                .foregroundStyle(.yellow)
-            Text(label)
-                .foregroundStyle(.white)
+            Text(reminder.wrappedValue.date(), style: .time)
+                .font(.title3)
+            
             Spacer()
-            // Text is now dynamic and formatted
-            Text(formatTime(hour: hour, minute: minute))
-                .foregroundStyle(.gray)
+            
+            Toggle("", isOn: reminder.isEnabled)
+                .tint(.blue)
+                .onChange(of: reminder.wrappedValue.isEnabled) {
+                    reminderStore.save()
+                }
         }
-        .padding(12)
-        .background(.white.opacity(0.05))
-        .cornerRadius(10)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            reminderToEdit = reminder.wrappedValue
+        }
     }
     
+    // --- Helper Functions for Add/Delete ---
+    func addReminder() {
+        let newReminder = Reminder(hour: 12, minute: 0)
+        reminderStore.add(reminder: newReminder)
+        reminderToEdit = newReminder
+    }
+    
+    func deleteReminder(at offsets: IndexSet) {
+        for index in offsets {
+            let reminder = reminderStore.reminders[index]
+            reminderStore.delete(reminder: reminder)
+        }
+    }
+
     // --- Reusable row for App Settings ---
     struct SettingsRow: View {
         var icon: String
@@ -221,18 +142,11 @@ struct SettingsView: View {
                         .foregroundStyle(.gray)
                 }
                 
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundStyle(.gray)
+               
             }
             .padding(.vertical, 8)
         }
     }
-}
-
-// Make String Identifiable so it can be used in .sheet(item:)
-extension String: @retroactive Identifiable {
-    public var id: String { self }
 }
 
 #Preview {

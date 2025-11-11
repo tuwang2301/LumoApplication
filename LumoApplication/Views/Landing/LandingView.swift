@@ -1,4 +1,5 @@
 import SwiftUI
+import Lottie
 
 struct LandingView: View {
     @EnvironmentObject var appState: AppState
@@ -13,21 +14,38 @@ struct LandingView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                
-                // Settings Button
-                HStack {
-                    Spacer()
+<<<<<<< HEAD
+                // Settings button (top-right)
+                ZStack(alignment: .topTrailing) {
                     Button(action: {
-                        showSettings = true // <-- 2. Toggle state
+                        showSettings = true
                     }) {
                         Image(systemName: "gearshape.fill")
                             .font(.system(size: 22))
-                            .foregroundStyle(Color.white)
+                            .foregroundStyle(.white)
+                            .padding(.trailing, 25)
+                            .padding(.top, -40)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
+                .frame(maxWidth: .infinity, alignment: .topTrailing)
+
+=======
                 
+                // Settings Button
+                HStack {
+                                    Spacer()
+                                    Button(action: {
+                                        showSettings = true
+                                    }) {
+                                        Image(systemName: "gearshape.fill")
+                                            .font(.system(size: 22))
+                                            .foregroundStyle(Color.white)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.top, 10)
+                
+>>>>>>> parent of f03157a (Lending Page Update)
                 Spacer()
                 
                 // Text Content
@@ -87,6 +105,13 @@ struct LandingView: View {
                             .padding(.top, 44)
                             .padding(.bottom, 34)
                         }
+        
+        .sheet(isPresented: $showSettings) {
+                    SettingsView()
+                        // Add this line to show the grabber:
+                        .presentationDragIndicator(.visible)
+                }
+        
         .sheet(isPresented: $showSettings) { // <-- 3. Add sheet
                     SettingsView()
                 }

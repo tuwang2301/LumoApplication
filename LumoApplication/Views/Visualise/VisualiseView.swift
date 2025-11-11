@@ -10,7 +10,8 @@ struct VisualiseView: View {
     @State private var currentPopupEmotion: String? = nil
     @State private var fadingColors: Set<String> = []
     @State private var draggedBubble: (emotion: Emotion, offset: CGSize, position: CGPoint)?
-    
+    @State private var bigBubbleAppear: Bool = false
+
     @State private var cachedBackground = AnyView(StarBackground())
 
     
@@ -44,40 +45,59 @@ struct VisualiseView: View {
     
     var body: some View {
         ZStack {
+            Color.black
+                .ignoresSafeArea()
+
+            // Star field fills full screen too
             cachedBackground
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 Spacer()
                     .frame(height: 150)
                 
-                // Large bubble with animation
+                // Large bubble with entrance + float + animation
                 ZStack {
-                    if !activeColors.isEmpty || !fadingColorsList.isEmpty {
-                        DynamicLightAnimation(
-                            colors: activeColors,
-                            fadingColors: fadingColorsList
-                        )
-                        .frame(width: 350, height: 350)
-                        .clipShape(Circle())
-                    }
+                    ZStack {
+                        if !activeColors.isEmpty || !fadingColorsList.isEmpty {
+                            DynamicLightAnimation(
+                                colors: activeColors,
+                                fadingColors: fadingColorsList
+                            )
+                            .frame(width: 350, height: 350)
+                            .clipShape(Circle())
+                        }
 
-                    BubbleFrame(size: largeBubbleSize)
+                        BubbleFrame(size: largeBubbleSize)
 
-                    if let emotionName = currentPopupEmotion {
-                        EmotionNamePopup(emotionName: emotionName)
+                        if let emotionName = currentPopupEmotion {
+                            EmotionNamePopup(emotionName: emotionName)
+                        }
                     }
+                    .scaleEffect(bigBubbleAppear ? 1.0 : 0.7)
+                    .opacity(bigBubbleAppear ? 1.0 : 0.0)
                 }
                 .frame(width: largeBubbleSize, height: largeBubbleSize)
                 .offset(y: bigBubbleFloat)
                 .onAppear {
+                    // Entrance
+                    withAnimation(.easeOut(duration: 0.7)) {
+                        bigBubbleAppear = true
+                    }
+                    // Gentle float (kept as is)
                     withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
                         bigBubbleFloat = -14
                     }
                 }
                 .frame(width: largeBubbleSize, height: largeBubbleSize)
-                
-                Spacer()
-                    .frame(height: 5)
+
+                if !remainingEmotions.isEmpty {
+                    Spacer()
+                        .frame(height: 5)
+                } else {
+                    Spacer()
+                        .frame(height: 50) // or 60–80 if you want more breathing room
+                }
                 
                 // Small bubbles carousel
                 if !remainingEmotions.isEmpty {
@@ -96,13 +116,18 @@ struct VisualiseView: View {
                         onRelease: releaseEmotion
                     )
                     .frame(height: 180)
-                    .padding(.bottom, 60)
+                    .padding(.bottom, 50)
                 } else {
-                    VStack(spacing: 20) {
-                        Text("Emotions are just visitors, let them come and go")
-                            .font(.title2)
+                    VStack(spacing: 60) {
+                        Text("\"Emotions are just visitors,\nlet them come and go\"")
+                            .font(.title3)
                             .foregroundColor(.white.opacity(0.8))
-                        
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(10)
+                            .padding(.horizontal, 32)
+                            .frame(maxWidth: .infinity)
+                            .fixedSize(horizontal: false, vertical: true)
+
                         Button(action: {
                             // TODO: Navigate back
                         }) {
@@ -117,7 +142,7 @@ struct VisualiseView: View {
                                 )
                         }
                     }
-                    .padding(.bottom, 60)
+                    .padding(.bottom, 20)
                 }
                 
                 Spacer()
