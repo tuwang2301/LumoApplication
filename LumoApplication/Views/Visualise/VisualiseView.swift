@@ -6,7 +6,6 @@ struct VisualiseView: View {
     // State management
     @State private var bigBubbleFloat: CGFloat = 0
     @State private var remainingEmotions: [Emotion]
-    @State private var releasedEmotions: [Emotion] = []
     @State private var currentPopupEmotion: String? = nil
     @State private var fadingColors: Set<String> = []
     @State private var draggedBubble: (emotion: Emotion, offset: CGSize, position: CGPoint)?
@@ -113,7 +112,10 @@ struct VisualiseView: View {
                                 draggedBubble?.offset = offset
                             }
                         },
-                        onRelease: releaseEmotion
+                        onRelease: releaseEmotion,
+                        onDragEnd: {
+                            draggedBubble = nil
+                        }
                     )
                     .frame(height: 180)
                     .padding(.bottom, 50)
@@ -175,7 +177,6 @@ struct VisualiseView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             withAnimation(.easeOut(duration: 0.3)) {
                 remainingEmotions.removeAll { $0.id == emotion.id }
-                releasedEmotions.append(emotion)
                 fadingColors.remove(emotion.id)
             }
         }
@@ -227,12 +228,13 @@ struct SmallBubbleCarousel: View {
     let onDragStart: (Emotion, CGPoint) -> Void
     let onDragChange: (Emotion, CGSize) -> Void
     let onRelease: (Emotion) -> Void
+    let onDragEnd: () -> Void
     
     private let bubbleSize: CGFloat = 100
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 2) {
+            HStack(spacing: 5) {
                 ForEach(Array(emotions.enumerated()), id: \.element.id) { index, emotion in
                     DraggableSmallBubble(
                         emotion: emotion,
@@ -243,11 +245,18 @@ struct SmallBubbleCarousel: View {
                         bubbleSize: bubbleSize,
                         onDragStart: onDragStart,
                         onDragChange: onDragChange,
-                        onRelease: onRelease
+                        onRelease: onRelease,
+                        onDragEnd: onDragEnd
                     )
                 }
             }
-            .padding(.vertical, 10)
+            .padding(.vertical, 100)
+            .frame(height: UIScreen.main.bounds.height)
+            .frame(maxWidth: .infinity, alignment: .center)
+
+            if emotions.count < 5 {
+                Spacer(minLength: 0)
+            }
         }
     }
 }
@@ -263,27 +272,34 @@ struct DraggableSmallBubble: View {
     let onDragStart: (Emotion, CGPoint) -> Void
     let onDragChange: (Emotion, CGSize) -> Void
     let onRelease: (Emotion) -> Void
+    let onDragEnd: () -> Void
     
     @State private var isBeingDragged: Bool = false
+    @State private var currentOffset: CGSize = .zero
+    @State private var isReleasing: Bool = false
     
-    private var arcOffset: CGSize {
-        let visibleCount = min(totalCount, 4)
-        let arcRadius: CGFloat = 20
-        let totalAngle: CGFloat = .pi / 2
-        let startAngle: CGFloat = .pi / 6
-        
-        if visibleCount == 1 {
-            return CGSize(width: 0, height: arcRadius)
-        }
-        
-        let angleStep = totalAngle / CGFloat(max(visibleCount - 1, 1))
-        let angle = startAngle + angleStep * CGFloat(index)
-        
-        let x = arcRadius * cos(angle)
-        let y = arcRadius * sin(angle)
-        
-        return CGSize(width: x, height: y)
+    private var arcOffset: CGFloat {
+       let visibleCount = min(totalCount, 4)
+       let arcRadius: CGFloat = -50
+       
+       // Nếu chỉ có 1 quả
+       if visibleCount == 1 {
+           return 0
+       }
+       
+       // Với 4 quả: index 0,3 cao bằng nhau, 1,2 thấp hơn
+       let midPoint = CGFloat(visibleCount - 1) / 2.0
+       let distanceFromCenter = abs(CGFloat(index) - midPoint)
+       
+       // Normalize distance (0 = giữa, 1 = rìa)
+       let normalizedDistance = distanceFromCenter / midPoint
+       
+       // Y offset: rìa cao nhất, giữa thấp nhất
+       let y = arcRadius * normalizedDistance
+       
+       return y
     }
+    
     
     private func isInsideLargeBubble(position: CGPoint, offset: CGSize) -> Bool {
         let currentX = position.x + offset.width
@@ -302,8 +318,8 @@ struct DraggableSmallBubble: View {
             size: bubbleSize,
             emotionName: emotion.label
         )
-        .offset(x: arcOffset.width, y: arcOffset.height)
-        .opacity(isBeingDragged ? 0.3 : 1.0)
+//        .offset(y: arcOffset)
+        .opacity(isBeingDragged || isReleasing ? 0 : 1.0)
         .gesture(
             DragGesture(coordinateSpace: .global)
                 .onChanged { value in
@@ -311,14 +327,25 @@ struct DraggableSmallBubble: View {
                         isBeingDragged = true
                         onDragStart(emotion, value.startLocation)
                     }
+                    currentOffset = value.translation
                     onDragChange(emotion, value.translation)
                 }
                 .onEnded { value in
+                    
                     isBeingDragged = false
                     
                     if isInsideLargeBubble(position: value.startLocation, offset: value.translation) {
+                        isReleasing.toggle()
                         onRelease(emotion)
+                        
                     }
+                    else {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                            currentOffset = .zero
+                        }
+                    }
+                    
+                    onDragEnd()
                 }
         )
     }
@@ -451,7 +478,8 @@ struct DynamicLightAnimation: View {
         Emotion(id: "anxious", label: "Anxious", coord: GridCoord(xIdx: 0, yIdx: 8), description: nil, vRaw: 0.0, aRaw: 0.615),
         Emotion(id: "frustrated", label: "Frustrated", coord: GridCoord(xIdx: 3, yIdx: 9), description: nil, vRaw: 0.231, aRaw: 0.692),
         Emotion(id: "joyful", label: "Joyful", coord: GridCoord(xIdx: 13, yIdx: 10), description: nil, vRaw: 1.0, aRaw: 0.769),
-        Emotion(id: "calm", label: "Calm", coord: GridCoord(xIdx: 7, yIdx: 0), description: nil, vRaw: 0.538, aRaw: 0.0)
+        Emotion(id: "calm", label: "Calm", coord: GridCoord(xIdx: 7, yIdx: 0), description: nil, vRaw: 0.538, aRaw: 0.0),
+        Emotion(id: "a", label: "Calm", coord: GridCoord(xIdx: 9, yIdx: 0), description: nil, vRaw: 0.53, aRaw: 0.0)
     ]
     
     VisualiseView(selectedEmotions: sampleEmotions)
