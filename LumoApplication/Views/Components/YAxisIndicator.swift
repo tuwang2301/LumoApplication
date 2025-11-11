@@ -62,9 +62,9 @@ struct YAxisIndicator: View {
                 Image("star")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 40, height: 40)
+                    .frame(width: 50, height: 50)
                     .shadow(color: .black.opacity(0.5), radius: 3)
-                    .position(x: 42, y: starY)
+                    .position(x: 44, y: starY)
             }
         }
         .frame(width: 80)

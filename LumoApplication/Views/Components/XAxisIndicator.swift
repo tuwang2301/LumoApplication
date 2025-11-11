@@ -50,9 +50,9 @@ struct XAxisIndicator: View {
                 Image("star")
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 40, height: 40)
+                    .frame(width: 50, height: 50)
                     .shadow(color: .black.opacity(0.5), radius: 3)
-                    .position(x: starX, y: 45)
+                    .position(x: starX, y: 46)
             }
         }
         .frame(height: 60)
