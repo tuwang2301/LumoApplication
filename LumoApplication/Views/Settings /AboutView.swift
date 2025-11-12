@@ -23,7 +23,7 @@ struct AboutView: View {
                         .foregroundStyle(.gray)
                         .padding(.bottom, 30)
 
-                    Text("Lumo is a space to notice how you feel. \nBy simply recognizing your emotions, you reclaim the agency to move through them. Through aesthetics and sensory experience, Lumo invites you to reconnect with your inner self.")
+                    Text("Lumo is a space to notice how you feel. By simply recognizing your emotions, you reclaim the agency to move through them. Through aesthetics and sensory experience, Lumo invites you to reconnect with your inner self.")
                         .font(.body)
                         .foregroundStyle(.gray)
                                                 

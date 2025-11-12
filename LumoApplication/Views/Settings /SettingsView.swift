@@ -59,17 +59,13 @@ struct SettingsView: View {
                     }
                     .listRowBackground(Color.gray.opacity(0.15))
                     
-                    // --- APP SETTINGS SECTION ---
                     Section("App Settings") {
-                        
-                        // --- THIS IS THE CHANGE ---
-                        NavigationLink(destination: HelpAndSupportView()) {
-                            SettingsRow(icon: "questionmark.circle.fill", text: "FAQ") // Renamed
-                        }
-                        // --- END OF CHANGE ---
                         
                         NavigationLink(destination: AboutView()) {
                             SettingsRow(icon: "info.circle.fill", text: "About")
+                        }
+                        NavigationLink(destination: PrivacyAndPolicyView()) {
+                            SettingsRow(icon: "questionmark.circle.fill", text: "Privacy & Policy") // Renamed
                         }
                     }
                     .listRowBackground(Color.gray.opacity(0.15))
