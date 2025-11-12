@@ -262,7 +262,7 @@ extension VisualiseView {
         if #available(iOS 26.0, *) {               // FoundationModels is iOS 26+
             do {
                 // System prompt = high-priority instructions
-                let session = try LanguageModelSession(
+                let session = LanguageModelSession(
                     instructions: """
                     You are calm, compassionate, and concise.
                     Output one supportive sentence, 8–18 words.
@@ -422,7 +422,6 @@ struct DraggableSmallBubble: View {
     
     private var arcOffset: CGFloat {
        let visibleCount = min(totalCount, 4)
-       let arcRadius: CGFloat = -50
        if visibleCount == 1 { return 0 }
        let midPoint = CGFloat(visibleCount - 1) / 2.0
        let distanceFromCenter = abs(CGFloat(index) - midPoint)
@@ -615,3 +614,4 @@ struct DynamicLightAnimation: View {
         Text("Preview not available")
     }
 }
+
