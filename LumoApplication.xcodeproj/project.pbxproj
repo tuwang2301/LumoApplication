@@ -38,6 +38,7 @@
 			isa = PBXGroup;
 			children = (
 				09B1E00B2EBC506B006A2491 /* LumoApplication */,
+				09E9F6082EC40C45004FE003 /* Frameworks */,
 				09B1E00A2EBC506B006A2491 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +49,13 @@
 				09B1E0092EBC506B006A2491 /* LumoApplication.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		09E9F6082EC40C45004FE003 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

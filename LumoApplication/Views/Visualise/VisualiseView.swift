@@ -3,6 +3,7 @@ import SwiftUI
 struct VisualiseView: View {
     
     @EnvironmentObject var appState: AppState
+    @Environment(\.presentationMode) var presentationMode
     
     // State management
     @State private var bigBubbleFloat: CGFloat = 0
@@ -10,9 +11,13 @@ struct VisualiseView: View {
     @State private var fadingColors: Set<String> = []
     @State private var draggedBubble: (emotion: Emotion, offset: CGSize, position: CGPoint)?
     @State private var bigBubbleAppear: Bool = false
-
     @State private var cachedBackground = AnyView(StarBackground())
-
+    
+    // Tutorial states
+    @State private var showTutorial: Bool = false
+    @State private var firstBubblePosition: CGPoint? = nil
+//    @AppStorage("hasSeenVisualiseTutorial")
+    @State private var hasSeenTutorial: Bool = false
     
     // Large bubble configuration
     private let largeBubbleSize: CGFloat = 400
@@ -80,6 +85,13 @@ struct VisualiseView: View {
                     withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
                         bigBubbleFloat = -14
                     }
+                    
+                    // Show tutorial if first time
+                    if !hasSeenTutorial && !appState.selectedEmotions.isEmpty {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            showTutorial = true
+                        }
+                    }
                 }
                 .frame(width: largeBubbleSize, height: largeBubbleSize)
 
@@ -88,7 +100,7 @@ struct VisualiseView: View {
                         .frame(height: 5)
                 } else {
                     Spacer()
-                        .frame(height: 50) // or 60–80 if you want more breathing room
+                        .frame(height: 50)
                 }
                 
                 // Small bubbles carousel
@@ -99,6 +111,13 @@ struct VisualiseView: View {
                         largeBubbleSize: largeBubbleSize,
                         onDragStart: { emotion, position in
                             draggedBubble = (emotion, .zero, position)
+                            // Hide tutorial on first drag
+                            if showTutorial {
+                                withAnimation {
+                                    showTutorial = false
+                                }
+                                hasSeenTutorial = true
+                            }
                         },
                         onDragChange: { emotion, offset in
                             if draggedBubble?.emotion.id == emotion.id {
@@ -108,6 +127,9 @@ struct VisualiseView: View {
                         onRelease: releaseEmotion,
                         onDragEnd: {
                             draggedBubble = nil
+                        },
+                        onFirstBubblePosition: { position in
+                            firstBubblePosition = position
                         }
                     )
                     .frame(height: 180)
@@ -158,8 +180,23 @@ struct VisualiseView: View {
                     y: dragged.position.y + dragged.offset.height
                 )
             }
-        
+            
+            // Tutorial Hand Gesture
+            if showTutorial, let startPos = firstBubblePosition {
+                HandGestureTutorial(
+                    startPosition: CGPoint(x: startPos.x + 30, y: startPos.y + 30) ,
+                    endPosition: CGPoint(x: largeBubbleCenter.x, y: largeBubbleCenter.y + 50),
+                    onDismiss: {
+                        withAnimation {
+                            showTutorial = false
+                        }
+                        hasSeenTutorial = true
+                    }
+                )
+            }
         }
+        .navigationBarBackButtonHidden(appState.selectedEmotions.isEmpty)
+        .interactiveDismissDisabled(appState.selectedEmotions.isEmpty)
         .ignoresSafeArea()
     }
     
@@ -213,6 +250,75 @@ struct VisualiseView: View {
     }
 }
 
+// MARK: - Hand Gesture Tutorial
+struct HandGestureTutorial: View {
+    let startPosition: CGPoint
+    let endPosition: CGPoint
+    let onDismiss: () -> Void
+    
+    @State private var handPosition: CGPoint
+    @State private var opacity: Double = 0
+    
+    init(startPosition: CGPoint, endPosition: CGPoint, onDismiss: @escaping () -> Void) {
+        self.startPosition = startPosition
+        self.endPosition = endPosition
+        self.onDismiss = onDismiss
+        _handPosition = State(initialValue: startPosition)
+    }
+    
+    var body: some View {
+        ZStack {
+            // Semi-transparent overlay
+            Color.black.opacity(0.5)
+                .ignoresSafeArea()
+                .opacity(opacity)
+                .onTapGesture {
+                    onDismiss()
+                }
+            
+            // Animated hand
+            Image(systemName: "hand.point.up.left.fill")
+                .font(.system(size: 60))
+                .position(handPosition)
+                .opacity(opacity)
+                .foregroundColor(.white)
+            
+            Text("Drag to release")
+                .font(.title)          // chữ nhỏ
+                .foregroundColor(.gray)  // màu xám
+                .opacity(opacity)
+            
+            
+        }
+        .onAppear {
+            withAnimation(.easeIn(duration: 0.3)) {
+                opacity = 1.0
+            }
+            
+            animateHand()
+            
+            // Auto-dismiss after 6 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+                onDismiss()
+            }
+        }
+    }
+    
+    private func animateHand() {
+        withAnimation(.easeOut(duration: 0.5)) {
+            handPosition = endPosition
+        }
+        
+        // Return to start and repeat
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
+            handPosition = startPosition
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                animateHand()
+            }
+        }
+    }
+}
+
 // MARK: - Small Bubble Carousel
 struct SmallBubbleCarousel: View {
     let emotions: [Emotion]
@@ -222,6 +328,7 @@ struct SmallBubbleCarousel: View {
     let onDragChange: (Emotion, CGSize) -> Void
     let onRelease: (Emotion) -> Void
     let onDragEnd: () -> Void
+    let onFirstBubblePosition: (CGPoint) -> Void
     
     private let bubbleSize: CGFloat = 100
     
@@ -239,7 +346,12 @@ struct SmallBubbleCarousel: View {
                         onDragStart: onDragStart,
                         onDragChange: onDragChange,
                         onRelease: onRelease,
-                        onDragEnd: onDragEnd
+                        onDragEnd: onDragEnd,
+                        onPositionReady: { position in
+                            if index == 0 {
+                                onFirstBubblePosition(position)
+                            }
+                        }
                     )
                 }
             }
@@ -266,6 +378,7 @@ struct DraggableSmallBubble: View {
     let onDragChange: (Emotion, CGSize) -> Void
     let onRelease: (Emotion) -> Void
     let onDragEnd: () -> Void
+    let onPositionReady: (CGPoint) -> Void
     
     @State private var isBeingDragged: Bool = false
     @State private var currentOffset: CGSize = .zero
@@ -275,24 +388,17 @@ struct DraggableSmallBubble: View {
        let visibleCount = min(totalCount, 4)
        let arcRadius: CGFloat = -50
        
-       // Nếu chỉ có 1 quả
        if visibleCount == 1 {
            return 0
        }
        
-       // Với 4 quả: index 0,3 cao bằng nhau, 1,2 thấp hơn
        let midPoint = CGFloat(visibleCount - 1) / 2.0
        let distanceFromCenter = abs(CGFloat(index) - midPoint)
-       
-       // Normalize distance (0 = giữa, 1 = rìa)
        let normalizedDistance = distanceFromCenter / midPoint
-       
-       // Y offset: rìa cao nhất, giữa thấp nhất
        let y = arcRadius * normalizedDistance
        
        return y
     }
-    
     
     private func isInsideLargeBubble(position: CGPoint, offset: CGSize) -> Bool {
         let currentX = position.x + offset.width
@@ -306,40 +412,57 @@ struct DraggableSmallBubble: View {
     }
     
     var body: some View {
-        SmallBubble(
-            color: EmotionPalette.shared.color(for: emotion),
-            size: bubbleSize,
-            emotionName: emotion.label
-        )
-        .opacity(isBeingDragged || isReleasing ? 0 : 1.0)
-        .gesture(
-            DragGesture(coordinateSpace: .global)
-                .onChanged { value in
-                    if !isBeingDragged {
-                        isBeingDragged = true
-                        onDragStart(emotion, value.startLocation)
-                    }
-                    currentOffset = value.translation
-                    onDragChange(emotion, value.translation)
-                }
-                .onEnded { value in
-                    
-                    isBeingDragged = false
-                    
-                    if isInsideLargeBubble(position: value.startLocation, offset: value.translation) {
-                        isReleasing.toggle()
-                        onRelease(emotion)
-                        
-                    }
-                    else {
-                        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                            currentOffset = .zero
+        GeometryReader { geometry in
+            SmallBubble(
+                color: EmotionPalette.shared.color(for: emotion),
+                size: bubbleSize,
+                emotionName: emotion.label
+            )
+            .opacity(isBeingDragged || isReleasing ? 0 : 1.0)
+            .background(
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            // Delay để đảm bảo layout đã hoàn tất
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                let frame = geo.frame(in: .global)
+                                let center = CGPoint(
+                                    x: frame.midX,
+                                    y: frame.midY + arcOffset
+                                )
+                                onPositionReady(center)
+                            }
                         }
-                    }
-                    
-                    onDragEnd()
                 }
-        )
+            )
+            .gesture(
+                DragGesture(coordinateSpace: .global)
+                    .onChanged { value in
+                        if !isBeingDragged {
+                            isBeingDragged = true
+                            onDragStart(emotion, value.startLocation)
+                        }
+                        currentOffset = value.translation
+                        onDragChange(emotion, value.translation)
+                    }
+                    .onEnded { value in
+                        isBeingDragged = false
+                        
+                        if isInsideLargeBubble(position: value.startLocation, offset: value.translation) {
+                            isReleasing.toggle()
+                            onRelease(emotion)
+                        }
+                        else {
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                                currentOffset = .zero
+                            }
+                        }
+                        
+                        onDragEnd()
+                    }
+            )
+        }
+        .frame(width: bubbleSize, height: bubbleSize)
     }
 }
 
