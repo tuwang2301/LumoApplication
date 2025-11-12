@@ -25,15 +25,15 @@ struct VisualiseView: View {
     @State private var aiMessage: String? = nil
     @State private var emotionSnapshot: [Emotion] = []
     
-    // NEW (AI): session + availability
-    @State private var aiAvailability: String? = nil
-    private var aiSessionAvailable: Bool {
-        #if canImport(AppleIntelligence)
-        if #available(iOS 26.1, *) { return true }
-        #endif
-        return false
-    }
-    
+    // AI: performance + control
+    @State private var genTask: Task<Void, Never>? = nil
+    // AI: reuse on-device session + warmup flag
+    // Store session as Any? to avoid compile-time availability errors on < iOS 26
+    @State private var aiSession: Any? = nil
+    @State private var isAIWarmedUp: Bool = false
+    // AI: simple in-memory cache for generated supportive lines (keyed by sorted emotion labels)
+    @State private var aiCache: [String: String] = [:]
+
     // Large bubble configuration
     private let largeBubbleSize: CGFloat = 400
     private let largeBubbleCenter: CGPoint = CGPoint(x: 200, y: 320)
@@ -138,7 +138,7 @@ struct VisualiseView: View {
                                 .frame(maxWidth: .infinity)
                                 .fixedSize(horizontal: false, vertical: true)
                         } else {
-                            ProgressView("Preparing a note for you…")
+                            ProgressView(" ")
                                 .tint(.white)
                                 .foregroundStyle(.white)
                         }
@@ -188,6 +188,33 @@ struct VisualiseView: View {
         .navigationBarBackButtonHidden(appState.selectedEmotions.isEmpty)
         .interactiveDismissDisabled(appState.selectedEmotions.isEmpty)
         .ignoresSafeArea()
+        // AI: warm up session once when the view appears
+        .onAppear {
+            if #available(iOS 26.0, *), !isAIWarmedUp {
+                // Create session only on iOS 26+
+                let session = LanguageModelSession(
+                    instructions: """
+                    You are calm, compassionate, and concise.
+                    Output one supportive sentence, 8–18 words.
+                    Use second person ("you"). No emojis. No exclamation marks. Avoid clichés.
+                    """
+                )
+                aiSession = session as Any
+                Task {
+                    _ = try? await session.respond(to: "ok")
+                    isAIWarmedUp = true
+                    #if DEBUG
+                    print("AI warmed up")
+                    #endif
+                }
+            }
+        }
+        // AI: precompute line while emotions still exist (cached), show later
+        .onChange(of: appState.selectedEmotions) { _, newValue in
+            if !newValue.isEmpty {
+                updateSupportiveMessageDebounced(from: newValue)
+            }
+        }
     }
     
     // MARK: - Release logic (safe snapshot → AI)
@@ -244,37 +271,98 @@ struct VisualiseView: View {
 // MARK: - AI (Apple Intelligence) wiring + generation
 extension VisualiseView {
     
+    // AI: debounce wrapper so rapid changes don't queue work
+    private func updateSupportiveMessageDebounced(from emotions: [Emotion]) {
+        genTask?.cancel()
+        genTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 250_000_000) // 250 ms
+            await generateSupportiveMessage(from: emotions)
+        }
+    }
+    
     // Generate the one-line message using Apple Intelligence; fallback if needed.
     @MainActor
     private func generateSupportiveMessage(from emotions: [Emotion]) async {
+        // Prepare compact input
         let labels = emotions
             .map { $0.label.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
-        let emotionList = labels.isEmpty ? "your current state" : labels.joined(separator: ", ")
+        let shortList = Array(labels.prefix(2))
+        let emotionList = shortList.isEmpty ? "your current state" : shortList.joined(separator: ", ")
+        
+        // Cache lookup
+        let cacheKey = shortList.sorted().joined(separator: "|")
+        if let cached = aiCache[cacheKey] {
+            aiMessage = cached
+            return
+        }
 
         let prompt = """
-        The user just released these emotions: \(emotionList).
-        Write exactly ONE short, supportive sentence (8–18 words).
-        Second person (“you”). No emojis, no exclamation marks, no clichés.
-        Acknowledge at most one emotion by name. Output only the sentence.
+        You are given these emotion labels: \(emotionList)
+
+        Write ONE short, supportive emotional sentence (8–18 words)
+        that directly fits the user’s mood.
+        Do NOT explain or describe your reasoning.
+        No introductions. No analysis. No meta text.
+
+        Infer pleasantness quickly:
+        - Low → calming, accepting tone.
+        - Middle → balanced, reflective tone.
+        - High → peaceful, uplifting tone.
+
+        Use second person (“you”).
+        No emojis, no exclamation marks, no clichés.
+        Output only the final supportive sentence.
+
+        Examples for guidance:
+
+        low pleasantness
+        * Emotions come and go like waves in the sea
+        * Emotions are just visitors, let them come and go.
+        * You noticed it and that means it can pass
+        * Even storms pass. Let this one move through you.
+        * Every emotion eventually finds its way out
+        * You are not your emotions, you’re the space they move in.
+
+        middle pleasantness
+        * The moment is quiet and that is all it needs to be
+        * Feel what is left and let it be simple
+        * Nothing to fix nothing to fight
+        * You’re growing through what you go through.
+        * Stay curious about what you feel, not critical.
+        * Notice what’s here, without judging it.
+        * You are allowed to take things slow.
+
+        high pleasantness
+        * Stay present this moment is already enough
+        * Let this calm stay with you for a while
+        * You are light and it reaches farther than you think
+        * You are part of something gentle and alive
         """
+
 
         if #available(iOS 26.0, *) {               // FoundationModels is iOS 26+
             do {
-                // System prompt = high-priority instructions
-                let session = LanguageModelSession(
-                    instructions: """
-                    You are calm, compassionate, and concise.
-                    Output one supportive sentence, 8–18 words.
-                    Use second person ("you"). No emojis. No exclamation marks. Avoid clichés.
-                    """
-                )
+                // Reuse session if available; create if missing
+                let session: LanguageModelSession = {
+                    if let existing = aiSession as? LanguageModelSession { return existing }
+                    let created = LanguageModelSession(
+                        instructions: """
+                        You are calm, compassionate, and concise philosopher.
+                        Output one supportive sentence, 8–18 words.
+                        Use second person ("you"). No emojis. No exclamation marks. Avoid clichés.
+                        """
+                    )
+                    aiSession = created as Any
+                    return created
+                }()
 
                 // Single-turn response
                 let reply = try await session.respond(to: prompt)
                 let text = reply.content.trimmingCharacters(in: .whitespacesAndNewlines)
 
                 if !text.isEmpty {
+                    aiCache[cacheKey] = text
                     aiMessage = text
                     #if DEBUG
                     print("AI (on-device) →", text)
@@ -289,15 +377,19 @@ extension VisualiseView {
         }
 
         // Fallback if unavailable or errored
-        aiMessage = fallbackLine(from: labels)
+        let fallback = fallbackLine(from: labels)
+        aiCache[cacheKey] = fallback
+        aiMessage = fallback
         #if DEBUG
         print("Fallback →", aiMessage ?? "<nil>")
         #endif
     }
         
-
-    // Minimal generic fallback that builds a single sentence from labels (no preset list).
+    // Minimal generic fallback
     private func fallbackLine(from labels: [String]) -> String {
+        if let first = labels.first, !first.isEmpty {
+            return "You’re steady, acknowledge \(first) and take one small, kind step."
+        }
         return "You’re doing your best; notice what you feel and take one gentle step."
     }
 }
