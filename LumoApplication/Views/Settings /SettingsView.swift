@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     // 1. State
     @AppStorage("enableReminders") private var enableReminders = true
+    @AppStorage("isMusicEnabled") private var isMusicEnabled = true
     
     // 2. The new source of truth for our list
     @StateObject private var reminderStore = ReminderStore()
@@ -21,7 +22,7 @@ struct SettingsView: View {
                     // --- REMINDERS SECTION ---
                     Section(
                         header: Text("Reminders").font(.headline),
-                        footer: Text("Add or edit your daily check-in reminders.")
+                        footer: Text("Add or edit your daily check-in freminders.")
                     ) {
                         // Main Enable Toggle
                         Toggle(isOn: $enableReminders) {
@@ -61,6 +62,11 @@ struct SettingsView: View {
                     
                     Section("App Settings") {
                         
+                        Toggle(isOn: $isMusicEnabled) {
+                                                    Text("Background Music")
+                                                }
+                                                .tint(.green)
+                        
                         NavigationLink(destination: AboutView()) {
                             SettingsRow(icon: "info.circle.fill", text: "About")
                         }
@@ -70,6 +76,15 @@ struct SettingsView: View {
                     }
                     .listRowBackground(Color.gray.opacity(0.15))
                 }
+                
+                .onChange(of: isMusicEnabled) {
+                            if isMusicEnabled {
+                                // Use the file name you added in Step 1
+                                AudioManager.shared.startPlaying(musicFileName: "background-music.mp3")
+                            } else {
+                                AudioManager.shared.stopPlaying()
+                            }
+                        }
                 .listStyle(.insetGrouped) // Use the inset grouped style
                 .scrollContentBackground(.hidden) // Make list bg transparent
                 .navigationTitle("Settings")
