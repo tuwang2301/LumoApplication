@@ -29,12 +29,11 @@ struct ExploreView: View {
 //    @AppStorage("hasSeenExploreGestureTutorial")
     @State private var hasSeenTutorial = false
     @State private var showTutorial = false
-    @State private var tutorialStep = 0 // 0: horizontal swipe, 1: vertical swipe 1, 2: vertical swipe 2
     
 
     // Haptic feedback
-    private let hapticGenerator = UIImpactFeedbackGenerator(style: .medium)  // light → medium
-    @State private var lastHapticCoord: GridCoord? = nil  // Track last haptic trigger
+    private let hapticGenerator = UIImpactFeedbackGenerator(style: .medium)
+    @State private var lastHapticCoord: GridCoord? = nil
     
     // BlackHole icon animation
     @State private var blackHoleScale: CGFloat = 1.0
@@ -144,7 +143,9 @@ struct ExploreView: View {
                             
                             // Dismiss tutorial on user interaction
                             if showTutorial {
-                                showTutorial = false
+                                withAnimation {
+                                    showTutorial = false
+                                }
                                 hasSeenTutorial = true
                             }
                         }
@@ -242,9 +243,13 @@ struct ExploreView: View {
                 
                 // Tutorial Gesture Animation
                 if showTutorial {
-                    GestureTutorialView(step: tutorialStep)
-                        .zIndex(200)
-                        .allowsHitTesting(false)
+                    GestureTutorialView(
+                        showTutorial: $showTutorial,
+                        hasSeenTutorial: $hasSeenTutorial
+                    )
+                    .zIndex(200)
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
                 }
             }
             .onAppear {
@@ -260,8 +265,9 @@ struct ExploreView: View {
                 // Show tutorial if first time
                 if !hasSeenTutorial {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                        showTutorial = true
-                        startTutorialAnimation()
+                        withAnimation {
+                            showTutorial = true
+                        }
                     }
                 }
             }
@@ -326,24 +332,6 @@ struct ExploreView: View {
         .navigationBarBackButtonHidden(focusedEmotion != nil)
     }
     
-    private func startTutorialAnimation() {
-        let steps = [0, 1, 2] // các bước tutorial
-           tutorialStep = 0
-           
-           for (index, step) in steps.enumerated() {
-               DispatchQueue.main.asyncAfter(deadline: .now() + Double(index + 1) * 1.5) {
-                   tutorialStep = step
-                   
-                   // Nếu là bước cuối cùng thì ẩn tutorial
-                   if step == steps.last {
-                       withAnimation(.easeOut(duration: 0.5)) {
-                           showTutorial = false
-                       }
-                       hasSeenTutorial = true
-                   }
-               }
-           }
-    }
 
     func offsetX(_ value: Int) -> CGFloat {
         let rowNumber = value / gridItems.count
@@ -488,9 +476,8 @@ struct ExploreView: View {
                 // Trigger haptic feedback when center emotion ACTUALLY changes (different cell)
                 if let lastCoord = lastHapticCoord {
                     if lastCoord.xIdx != interpolatedCoord.xIdx || lastCoord.yIdx != interpolatedCoord.yIdx {
-                        hapticGenerator.impactOccurred(intensity: 1.0)  // Full intensity
+                        hapticGenerator.impactOccurred(intensity: 1.0)
                         lastHapticCoord = interpolatedCoord
-                        print("🔔 Haptic triggered: (\(interpolatedCoord.xIdx), \(interpolatedCoord.yIdx))")
                     }
                 } else {
                     lastHapticCoord = interpolatedCoord
@@ -513,7 +500,8 @@ struct ExploreView: View {
 
 // MARK: - Gesture Tutorial View
 struct GestureTutorialView: View {
-    let step: Int
+    @Binding var showTutorial: Bool
+    @Binding var hasSeenTutorial: Bool
     @State private var animationProgress: CGFloat = 0
     
     var body: some View {
@@ -522,28 +510,20 @@ struct GestureTutorialView: View {
                 // Semi-transparent background
                 Color.black.opacity(0.4).ignoresSafeArea()
                 
-                // Hand gesture animation
-                if step == 0 {
-                    // Horizontal swipe
-                    Image(systemName: "hand.point.up.left.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(.white)
-                        .offset(x: animationProgress * 150)
-                    .position(x: geo.size.width / 2 - 50, y: geo.size.height / 2)
-                } else if step == 1 {
-                    // Vertical swipes
-                   
-                    Image(systemName: "hand.point.up.left.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(.white)
-                        .offset(y: animationProgress * 150)
-                    .position(x: geo.size.width / 2, y: geo.size.height / 2 - 50)
-                }
+                // Hand gesture animation - L-shaped: up then right
+                Image(systemName: "hand.point.up.left.fill")
+                    .font(.system(size: 50))
+                    .foregroundColor(.white)
+                    .offset(
+                        x: animationProgress > 0.5 ? (animationProgress - 0.5) * 2 * 150 : 0,
+                        y: animationProgress <= 0.5 ? -animationProgress * 2 * 150 : -150
+                    )
+                    .position(x: geo.size.width / 2, y: geo.size.height / 2 + 75)
                 
                 // Instruction text
                 VStack {
                     Spacer()
-                    Text(step == 0 ? "Swipe horizontally to explore" : "Swipe vertically too!")
+                    Text("Explore it yourself")
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding()
@@ -558,15 +538,29 @@ struct GestureTutorialView: View {
         .onAppear {
             animateGesture()
         }
-        .onChange(of: step) { _, _ in
-            animationProgress = 0
-            animateGesture()
-        }
     }
     
     private func animateGesture() {
-        withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-            animationProgress = 1.0
+        animationProgress = 0
+        
+        // Phase 1: Move up (0 -> 0.5)
+        withAnimation(.linear(duration: 1.0)) {
+            animationProgress = 0.5
+        }
+        
+        // Phase 2: Move right (0.5 -> 1.0) after 1 second
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            withAnimation(.linear(duration: 1.0)) {
+                animationProgress = 1.0
+            }
+        }
+        
+        // Auto-dismiss after completing one full cycle (3 seconds total)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            withAnimation {
+                showTutorial = false
+            }
+            hasSeenTutorial = true
         }
     }
 }
@@ -599,13 +593,4 @@ extension View {
             }
         }
     }
-}
-
-
-
-#Preview {
-    var appState: AppState = AppState()
-
-    ExploreView()
-        .environmentObject(appState)
 }
