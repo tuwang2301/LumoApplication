@@ -1,9 +1,6 @@
 import SwiftUI
 import FoundationModels
 import Foundation
-#if canImport(AppleIntelligence)
-import AppleIntelligence
-#endif
 
 struct VisualiseView: View {
     
@@ -97,8 +94,6 @@ struct VisualiseView: View {
                     if !hasSeenTutorial && !appState.selectedEmotions.isEmpty {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { showTutorial = true }
                     }
-                    // NEW: set up Apple Intelligence session once
-                    setupAIAvailability()
                 }
 
                 if !appState.selectedEmotions.isEmpty {
@@ -248,35 +243,12 @@ struct VisualiseView: View {
 
 // MARK: - AI (Apple Intelligence) wiring + generation
 extension VisualiseView {
-    /// Create and prewarm a LanguageModelSession if available on device.
-    private func setupAIAvailability() {
-        #if canImport(AppleIntelligence)
-        if #available(iOS 26.1, *) {
-            let model = SystemLanguageModel.default
-            switch model.availability {
-            case .available:
-                aiAvailability = "available"
-            case .unavailable(let reason):
-                aiAvailability = "unavailable: \(reason)"
-            @unknown default:
-                aiAvailability = "unavailable: unknown"
-            }
-        } else {
-            aiAvailability = "unavailable: requires iOS 26.1"
-        }
-        #else
-        aiAvailability = "unavailable: framework missing"
-        #endif
-        #if DEBUG
-        print("AI availability:", aiAvailability ?? "nil")
-        #endif
-    }
     
     // Generate the one-line message using Apple Intelligence; fallback if needed.
     @MainActor
     private func generateSupportiveMessage(from emotions: [Emotion]) async {
         let labels = emotions
-            .map { $0.label.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
+            .map { $0.label.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
         let emotionList = labels.isEmpty ? "your current state" : labels.joined(separator: ", ")
 
@@ -287,23 +259,23 @@ extension VisualiseView {
         Acknowledge at most one emotion by name. Output only the sentence.
         """
 
-        #if canImport(AppleIntelligence)
-        if #available(iOS 26.1, *) {
+        if #available(iOS 26.0, *) {               // FoundationModels is iOS 26+
             do {
-                // Build instructions and session using Apple Intelligence APIs
-                let systemMessages = [
-                    LanguageModelMessage(role: .system, content: "You are calm, compassionate, concise. Output one supportive sentence, 8–18 words. Second person (\"you\"). No emojis. No exclamation marks. Avoid clichés.")
-                ]
-                let systemInstructions = Instructions(systemMessages)
-                let session = LanguageModelSession(instructions: systemInstructions)
-                try await session.prewarm(promptPrefix: Instructions([LanguageModelMessage(role: .system, content: "Supportive coach")]))
-                let userMessages = [
-                    LanguageModelMessage(role: .user, content: prompt)
-                ]
-                let reply = try await session.generate(Instructions(userMessages))
-                let text = reply.text.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                // System prompt = high-priority instructions
+                let session = try LanguageModelSession(
+                    instructions: """
+                    You are calm, compassionate, and concise.
+                    Output one supportive sentence, 8–18 words.
+                    Use second person ("you"). No emojis. No exclamation marks. Avoid clichés.
+                    """
+                )
+
+                // Single-turn response
+                let reply = try await session.respond(to: prompt)
+                let text = reply.content.trimmingCharacters(in: .whitespacesAndNewlines)
+
                 if !text.isEmpty {
-                    self.aiMessage = text
+                    aiMessage = text
                     #if DEBUG
                     print("AI (on-device) →", text)
                     #endif
@@ -314,23 +286,15 @@ extension VisualiseView {
                 print("AI generation error:", error.localizedDescription)
                 #endif
             }
-        } else {
-            #if DEBUG
-            print("AI not available | reason:", aiAvailability ?? "nil")
-            #endif
         }
-        #else
-        #if DEBUG
-        print("AppleIntelligence framework not available; using fallback")
-        #endif
-        #endif
 
-        // Fallback if AI unavailable or errored
-        self.aiMessage = fallbackLine(from: labels)
+        // Fallback if unavailable or errored
+        aiMessage = fallbackLine(from: labels)
         #if DEBUG
-        print("Fallback →", self.aiMessage ?? "<nil>")
+        print("Fallback →", aiMessage ?? "<nil>")
         #endif
     }
+        
 
     // Minimal generic fallback that builds a single sentence from labels (no preset list).
     private func fallbackLine(from labels: [String]) -> String {
