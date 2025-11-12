@@ -1,5 +1,9 @@
 import SwiftUI
-import FoundationModels // keep if you plan to wire Apple FM
+import FoundationModels
+import Foundation
+#if canImport(AppleIntelligence)
+import AppleIntelligence
+#endif
 
 struct VisualiseView: View {
     
@@ -23,6 +27,15 @@ struct VisualiseView: View {
     // AI output + snapshot of final emotions
     @State private var aiMessage: String? = nil
     @State private var emotionSnapshot: [Emotion] = []
+    
+    // NEW (AI): session + availability
+    @State private var aiAvailability: String? = nil
+    private var aiSessionAvailable: Bool {
+        #if canImport(AppleIntelligence)
+        if #available(iOS 26.1, *) { return true }
+        #endif
+        return false
+    }
     
     // Large bubble configuration
     private let largeBubbleSize: CGFloat = 400
@@ -84,6 +97,8 @@ struct VisualiseView: View {
                     if !hasSeenTutorial && !appState.selectedEmotions.isEmpty {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { showTutorial = true }
                     }
+                    // NEW: set up Apple Intelligence session once
+                    setupAIAvailability()
                 }
 
                 if !appState.selectedEmotions.isEmpty {
@@ -231,44 +246,95 @@ struct VisualiseView: View {
     }
 }
 
-// MARK: - AI message generation (no presets, AI decides)
+// MARK: - AI (Apple Intelligence) wiring + generation
 extension VisualiseView {
+    /// Create and prewarm a LanguageModelSession if available on device.
+    private func setupAIAvailability() {
+        #if canImport(AppleIntelligence)
+        if #available(iOS 26.1, *) {
+            let model = SystemLanguageModel.default
+            switch model.availability {
+            case .available:
+                aiAvailability = "available"
+            case .unavailable(let reason):
+                aiAvailability = "unavailable: \(reason)"
+            @unknown default:
+                aiAvailability = "unavailable: unknown"
+            }
+        } else {
+            aiAvailability = "unavailable: requires iOS 26.1"
+        }
+        #else
+        aiAvailability = "unavailable: framework missing"
+        #endif
+        #if DEBUG
+        print("AI availability:", aiAvailability ?? "nil")
+        #endif
+    }
+    
+    // Generate the one-line message using Apple Intelligence; fallback if needed.
     @MainActor
     private func generateSupportiveMessage(from emotions: [Emotion]) async {
         let labels = emotions
-            .map { $0.label.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .map { $0.label.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
         let emotionList = labels.isEmpty ? "your current state" : labels.joined(separator: ", ")
 
         let prompt = """
-        You are a gentle, supportive coach. The user just released these emotions: \(emotionList).
-        Write exactly ONE short, supportive sentence (8–18 words), second person (“you”), no emojis, no exclamation marks.
-        Avoid clichés and avoid repeating their words verbatim unless necessary. Output only the sentence.
+        The user just released these emotions: \(emotionList).
+        Write exactly ONE short, supportive sentence (8–18 words).
+        Second person (“you”). No emojis, no exclamation marks, no clichés.
+        Acknowledge at most one emotion by name. Output only the sentence.
         """
 
-        // TODO: Replace the placeholder block below with your actual Foundation Models call.
-        // Keep types out so this compiles even before you add the SDK call.
-        do {
-            // Example (pseudo):
-            // let session = try await SomeFMTextSession(instructions: "Be concise, supportive, non-judgmental.")
-            // let text = try await session.generate(prompt)
-            // self.aiMessage = text.trimmingCharacters(in: .whitespacesAndNewlines)
-            throw NSError(domain: "FM.placeholder", code: -1)
-        } catch {
-            self.aiMessage = fallbackLine(from: labels) // minimal generic fallback
+        #if canImport(AppleIntelligence)
+        if #available(iOS 26.1, *) {
+            do {
+                // Build instructions and session using Apple Intelligence APIs
+                let systemMessages = [
+                    LanguageModelMessage(role: .system, content: "You are calm, compassionate, concise. Output one supportive sentence, 8–18 words. Second person (\"you\"). No emojis. No exclamation marks. Avoid clichés.")
+                ]
+                let systemInstructions = Instructions(systemMessages)
+                let session = LanguageModelSession(instructions: systemInstructions)
+                try await session.prewarm(promptPrefix: Instructions([LanguageModelMessage(role: .system, content: "Supportive coach")]))
+                let userMessages = [
+                    LanguageModelMessage(role: .user, content: prompt)
+                ]
+                let reply = try await session.generate(Instructions(userMessages))
+                let text = reply.text.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                if !text.isEmpty {
+                    self.aiMessage = text
+                    #if DEBUG
+                    print("AI (on-device) →", text)
+                    #endif
+                    return
+                }
+            } catch {
+                #if DEBUG
+                print("AI generation error:", error.localizedDescription)
+                #endif
+            }
+        } else {
+            #if DEBUG
+            print("AI not available | reason:", aiAvailability ?? "nil")
+            #endif
         }
-
+        #else
         #if DEBUG
-        print("AI supportive line for [\(emotionList)]: \(aiMessage ?? "<nil>")")
+        print("AppleIntelligence framework not available; using fallback")
+        #endif
+        #endif
+
+        // Fallback if AI unavailable or errored
+        self.aiMessage = fallbackLine(from: labels)
+        #if DEBUG
+        print("Fallback →", self.aiMessage ?? "<nil>")
         #endif
     }
 
     // Minimal generic fallback that builds a single sentence from labels (no preset list).
     private func fallbackLine(from labels: [String]) -> String {
-        let subject = labels.isEmpty
-            ? "what you feel"
-            : labels.prefix(2).joined(separator: " and ").lowercased()
-        return "You can notice \(subject) and let it move through at your pace."
+        return "You’re doing your best; notice what you feel and take one gentle step."
     }
 }
 
@@ -578,6 +644,10 @@ struct DynamicLightAnimation: View {
 }
 
 #Preview {
-    VisualiseView()
-        .environmentObject(AppState())
+    if #available(iOS 17.0, *) { // preview runs on host; keep minimal requirement
+        VisualiseView()
+            .environmentObject(AppState())
+    } else {
+        Text("Preview not available")
+    }
 }
