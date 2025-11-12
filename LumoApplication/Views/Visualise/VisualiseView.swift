@@ -88,9 +88,7 @@ struct VisualiseView: View {
                     
                     // Show tutorial if first time
                     if !hasSeenTutorial && !appState.selectedEmotions.isEmpty {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            showTutorial = true
-                        }
+                        showTutorial = true
                     }
                 }
                 .frame(width: largeBubbleSize, height: largeBubbleSize)
@@ -297,8 +295,7 @@ struct HandGestureTutorial: View {
             
             animateHand()
             
-            // Auto-dismiss after 6 seconds
-            DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                 onDismiss()
             }
         }

@@ -16,24 +16,29 @@ struct ExploreView: View {
     @State private var focusedEmotion: Emotion? = nil
 
     // overlay timing control
-    @State private var isPreparingOverlay = false    // stage A: recenter first, then open overlay
+    @State private var isPreparingOverlay = false
     
     // axis indicator state
     @State private var isScrolling = false
     @State private var scrollTimer: Timer? = nil
     @State private var centerEmotionCoord: GridCoord? = nil
     @State private var cellPositions: [String: CGRect] = [:]
-    @State private var scrollOffset: CGPoint = .zero  // Track actual scroll position
+    @State private var scrollOffset: CGPoint = .zero
     
-    // Load emotions from JSON
+    // Tutorial gesture animation
+//    @AppStorage("hasSeenExploreGestureTutorial")
+    @State private var hasSeenTutorial = false
+    @State private var showTutorial = false
+    @State private var tutorialStep = 0 // 0: horizontal swipe, 1: vertical swipe 1, 2: vertical swipe 2
+    
     private let emotions: [Emotion] = EmotionLoader.loadEmotions()
     
     private var emotionsGrid: [Emotion] {
         emotions.sorted {
             if $0.coord.yIdx != $1.coord.yIdx {
-                return $0.coord.yIdx < $1.coord.yIdx   // top to bottom
+                return $0.coord.yIdx < $1.coord.yIdx
             } else {
-                return $0.coord.xIdx < $1.coord.xIdx   // left to right
+                return $0.coord.xIdx < $1.coord.xIdx
             }
         }
     }
@@ -48,7 +53,6 @@ struct ExploreView: View {
     )
 
     var body: some View {
-        // Use ScrollViewReader so we can recenter to a specific index
         ScrollViewReader { proxy in
             ZStack {
                 cachedBackground
@@ -91,29 +95,23 @@ struct ExploreView: View {
                                     .id(centerID(for: index)),
                                 alignment: .center
                             )
-                            .id(index)  // Add id for scroll positioning
+                            .id(index)
                             .onTapGesture {
-                                // Stage A: recenter the tapped emotion to the true screen center
-                                isPreparingOverlay = true
                                 withAnimation(.spring(response: 0.45, dampingFraction: 0.9)) {
                                     scrollViewProxy?.scrollTo(centerID(for: index), anchor: .center)
                                 }
-                                // After the recenter animation, open the overlay
-                                let delay = 0.45
+                                let delay = 0.25
                                 DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                                    isPreparingOverlay = false
                                     focusedEmotion = emotion
                                 }
                             }
-                            // You need to add height
                             .frame(height: Self.size)
                         }
                     }
-                    // FIX: Add padding so rightmost column can be centered
                     .padding(.horizontal, UIScreen.main.bounds.width / 4)
                     .padding(.vertical, UIScreen.main.bounds.height / 6)
                 }
-                .defaultScrollAnchor(.center)  // Start at center
+                .defaultScrollAnchor(.center)
                 .simultaneousGesture(
                     DragGesture(minimumDistance: 0)
                         .onChanged { _ in
@@ -123,8 +121,13 @@ struct ExploreView: View {
                                 }
                             }
                             scrollTimer?.invalidate()
-                            // Update center emotion in real-time while scrolling
                             updateCenterEmotionSmooth()
+                            
+                            // Dismiss tutorial on user interaction
+                            if showTutorial {
+                                showTutorial = false
+                                hasSeenTutorial = true
+                            }
                         }
                         .onEnded { _ in
                             scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { _ in
@@ -143,7 +146,6 @@ struct ExploreView: View {
                             )
                             .onChange(of: scrollGeo.frame(in: .global)) { oldFrame, newFrame in
                                 if isScrolling {
-                                    // Update scroll offset continuously
                                     scrollOffset = CGPoint(x: newFrame.midX, y: newFrame.midY)
                                     updateCenterEmotionSmooth()
                                 }
@@ -162,7 +164,6 @@ struct ExploreView: View {
                     }
                 }
 
-                // Overlay sits on top and fully hides the grid behind it
                 if let fe = focusedEmotion {
                     let isMax = appState.selectedEmotions.count >= 8
                     let isDup = appState.selectedEmotions.contains { $0.id == fe.id }
@@ -171,7 +172,6 @@ struct ExploreView: View {
                         allEmotions: emotionsGrid,
                         cellSize: .init(width: Self.size, height: Self.size),
                         bigDiameter: 300,
-                        // center bubble tap => close and keep this emotion centered
                         onCloseAndCenterScroll: {
                             if let idx = emotionsGrid.firstIndex(where: { $0.id == fe.id }) {
                                 withAnimation(.spring()) {
@@ -180,7 +180,6 @@ struct ExploreView: View {
                             }
                             focusedEmotion = nil
                         },
-                        // plus tap => keep old selection logic, then recenter and close
                         onAdd: {
                             if appState.selectedEmotions.count >= 8 {
                                 showMaxReached = true
@@ -198,7 +197,6 @@ struct ExploreView: View {
                             }
                             focusedEmotion = nil
                         },
-                        // neighbor tap => switch the overlay focus immediately
                         onNeighborSelect: { newEmotion in
                             withAnimation(.spring()) { focusedEmotion = newEmotion }
                         },
@@ -210,13 +208,27 @@ struct ExploreView: View {
                     )
                     .zIndex(100)
                     .transition(.scale.combined(with: .opacity))
-            }
+                }
+                
+                // Tutorial Gesture Animation
+                if showTutorial {
+                    GestureTutorialView(step: tutorialStep)
+                        .zIndex(200)
+                        .allowsHitTesting(false)
+                }
             }
             .onAppear {
                 scrollViewProxy = proxy
-                // Initialize center emotion
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     updateCenterEmotion()
+                }
+                
+                // Show tutorial if first time
+                if !hasSeenTutorial {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                        showTutorial = true
+                        startTutorialAnimation()
+                    }
                 }
             }
             .overlay(alignment: .bottomLeading) {
@@ -237,8 +249,7 @@ struct ExploreView: View {
             }
         }
         .toolbar {
-            // Right Button
-            ToolbarItem(placement: .navigationBarTrailing, ) {
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     if appState.selectedEmotions.isEmpty {
                         showHelp = true
@@ -279,8 +290,25 @@ struct ExploreView: View {
         .toolbarBackground(.hidden, for: .navigationBar)
         .navigationBarBackButtonHidden(focusedEmotion != nil)
     }
-
-    // keep all helpers unchanged
+    
+    private func startTutorialAnimation() {
+        let steps = [0, 1, 2] // các bước tutorial
+           tutorialStep = 0
+           
+           for (index, step) in steps.enumerated() {
+               DispatchQueue.main.asyncAfter(deadline: .now() + Double(index + 1) * 1.5) {
+                   tutorialStep = step
+                   
+                   // Nếu là bước cuối cùng thì ẩn tutorial
+                   if step == steps.last {
+                       withAnimation(.easeOut(duration: 0.5)) {
+                           showTutorial = false
+                       }
+                       hasSeenTutorial = true
+                   }
+               }
+           }
+    }
 
     func offsetX(_ value: Int) -> CGFloat {
         let rowNumber = value / gridItems.count
@@ -351,6 +379,7 @@ struct ExploreView: View {
     func angle(slope: CGFloat) -> CGFloat {
         return abs(atan(slope) * 180 / .pi)
     }
+    
     private func centerID(for index: Int) -> String { "center-\(index)" }
     
     private func updateCenterEmotion() {
@@ -359,7 +388,6 @@ struct ExploreView: View {
             y: UIScreen.main.bounds.height / 2
         )
         
-        // Find emotion closest to screen center using actual positions
         var closestEmotion: Emotion?
         var minDistance: CGFloat = .infinity
         
@@ -382,14 +410,12 @@ struct ExploreView: View {
         }
     }
     
-    // Smooth continuous position update based on interpolation
     private func updateCenterEmotionSmooth() {
         let screenCenter = CGPoint(
             x: UIScreen.main.bounds.width / 2,
             y: UIScreen.main.bounds.height / 2
         )
         
-        // Find the 4 nearest emotions and interpolate
         var nearestEmotions: [(emotion: Emotion, distance: CGFloat)] = []
         
         for emotion in emotionsGrid {
@@ -402,16 +428,14 @@ struct ExploreView: View {
         nearestEmotions.sort { $0.distance < $1.distance }
         
         if nearestEmotions.count >= 4 {
-            // Get the 4 closest emotions
             let closest = Array(nearestEmotions.prefix(4))
             
-            // Calculate weighted average position
             var totalWeight: CGFloat = 0
             var weightedX: CGFloat = 0
             var weightedY: CGFloat = 0
             
             for item in closest {
-                let weight = 1.0 / max(item.distance, 1.0) // Inverse distance weighting
+                let weight = 1.0 / max(item.distance, 1.0)
                 totalWeight += weight
                 weightedX += CGFloat(item.emotion.coord.xIdx) * weight
                 weightedY += CGFloat(item.emotion.coord.yIdx) * weight
@@ -421,13 +445,11 @@ struct ExploreView: View {
                 let smoothX = weightedX / totalWeight
                 let smoothY = weightedY / totalWeight
                 
-                // Create interpolated coord
                 let interpolatedCoord = GridCoord(
                     xIdx: Int(round(smoothX)),
                     yIdx: Int(round(smoothY))
                 )
                 
-                // Update without animation for smooth continuous movement
                 centerEmotionCoord = interpolatedCoord
             }
         } else if let closest = nearestEmotions.first {
@@ -442,6 +464,67 @@ struct ExploreView: View {
     }
 }
 
+// MARK: - Gesture Tutorial View
+struct GestureTutorialView: View {
+    let step: Int
+    @State private var animationProgress: CGFloat = 0
+    
+    var body: some View {
+        GeometryReader { geo in
+            ZStack {
+                // Semi-transparent background
+                Color.black.opacity(0.4).ignoresSafeArea()
+                
+                // Hand gesture animation
+                if step == 0 {
+                    // Horizontal swipe
+                    Image(systemName: "hand.point.up.left.fill")
+                        .font(.system(size: 50))
+                        .foregroundColor(.white)
+                        .offset(x: animationProgress * 150)
+                    .position(x: geo.size.width / 2 - 50, y: geo.size.height / 2)
+                } else if step == 1 {
+                    // Vertical swipes
+                   
+                    Image(systemName: "hand.point.up.left.fill")
+                        .font(.system(size: 50))
+                        .foregroundColor(.white)
+                        .offset(y: animationProgress * 150)
+                    .position(x: geo.size.width / 2, y: geo.size.height / 2 - 50)
+                }
+                
+                // Instruction text
+                VStack {
+                    Spacer()
+                    Text(step == 0 ? "Swipe horizontally to explore" : "Swipe vertically too!")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.7))
+                        )
+                        .padding(.bottom, 100)
+                }
+            }
+        }
+        .onAppear {
+            animateGesture()
+        }
+        .onChange(of: step) { _, _ in
+            animationProgress = 0
+            animateGesture()
+        }
+    }
+    
+    private func animateGesture() {
+        withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+            animationProgress = 1.0
+        }
+    }
+}
+
+// MARK: - Supporting Types
 struct ScrollPositionPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
@@ -471,6 +554,11 @@ extension View {
     }
 }
 
-#Preview{
+
+
+#Preview {
+    var appState: AppState = AppState()
+
     ExploreView()
+        .environmentObject(appState)
 }
