@@ -30,7 +30,7 @@ struct AboutView: View {
                     
                     // --- Credits ---
                     VStack(spacing: 4) {
-                        Text("Made by i5Pro")
+                        Text("Made from ❤️ by i5Pro")
                             .font(.caption)
                             .foregroundStyle(.gray)
                         Text("© 2025 Lumo. All rights reserved.")
