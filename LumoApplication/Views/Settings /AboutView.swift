@@ -6,12 +6,12 @@ struct AboutView: View {
             Color.black.ignoresSafeArea()
             
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 10) {
                     // --- Header ---
                     Image("lumologo") // Use your app logo
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 120, height: 120)
+                        .frame(width: 200, height: 200)
                         .cornerRadius(20)
                     
                     Text("Lumo")
@@ -21,24 +21,16 @@ struct AboutView: View {
                     Text("Version 1.1.0")
                         .font(.subheadline)
                         .foregroundStyle(.gray)
-                    
-                    Text("Find Your Inner Cosmos")
-                        .font(.title3)
-                        .padding(.bottom, 20)
-                    
-                    // --- Mission ---
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Our Mission")
-                            .font(.headline)
-                        Text("Lumo is a personal companion designed to help you explore, understand, and visualise your emotions. We believe that by checking in with your inner cosmos, you can find greater clarity and peace.")
-                            .font(.body)
-                            .foregroundStyle(.gray)
-                    }
-                    
+                        .padding(.bottom, 30)
+
+                    Text("Lumo is a space to notice how you feel. By simply recognizing your emotions, you reclaim the agency to move through them. Through aesthetics and sensory experience, Lumo invites you to reconnect with your inner self.")
+                        .font(.body)
+                        .foregroundStyle(.gray)
+                                                
                     
                     // --- Credits ---
                     VStack(spacing: 4) {
-                        Text("Made with ❤️ by i5Pro")
+                        Text("Made from ❤️ by i5Pro")
                             .font(.caption)
                             .foregroundStyle(.gray)
                         Text("© 2025 Lumo. All rights reserved.")
@@ -48,7 +40,7 @@ struct AboutView: View {
                     .padding(.top, 80)
                     
                 }
-                .padding()
+                .padding(.horizontal, 50)
             }
         }
         .navigationTitle("About")

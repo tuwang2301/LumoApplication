@@ -23,7 +23,7 @@ class NotificationManager {
     func scheduleNotification(hour: Int, minute: Int, identifier: String) {
         let content = UNMutableNotificationContent()
         content.title = "Lumo"
-        content.body = "How are you feeling right now? Take a moment to explore your emotions."
+        content.body = "How are you feeling right now? \nTake a moment to explore your emotions."
         content.sound = .default
         
         var dateComponents = DateComponents()
