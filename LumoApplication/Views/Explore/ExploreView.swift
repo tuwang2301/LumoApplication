@@ -25,6 +25,13 @@ struct ExploreView: View {
     @State private var cellPositions: [String: CGRect] = [:]
     @State private var scrollOffset: CGPoint = .zero  // Track actual scroll position
     
+    // Haptic feedback
+    private let hapticGenerator = UIImpactFeedbackGenerator(style: .medium)  // light → medium
+    @State private var lastHapticCoord: GridCoord? = nil  // Track last haptic trigger
+    
+    // BlackHole icon animation
+    @State private var blackHoleScale: CGFloat = 1.0
+    
     // Load emotions from JSON
     private let emotions: [Emotion] = EmotionLoader.loadEmotions()
     
@@ -93,13 +100,18 @@ struct ExploreView: View {
                             )
                             .id(index)  // Add id for scroll positioning
                             .onTapGesture {
-                                // Stage A: recenter the tapped emotion to the true screen center
+                                // Haptic feedback on tap - stronger and longer
+                                let heavyHaptic = UIImpactFeedbackGenerator(style: .heavy)
+                                heavyHaptic.prepare()
+                                heavyHaptic.impactOccurred()
+                                
+                                // Stage A: recenter the tapped emotion to the true screen center (faster)
                                 isPreparingOverlay = true
-                                withAnimation(.spring(response: 0.45, dampingFraction: 0.9)) {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                                     scrollViewProxy?.scrollTo(centerID(for: index), anchor: .center)
                                 }
-                                // After the recenter animation, open the overlay
-                                let delay = 0.45
+                                // After the recenter animation, open the overlay (faster delay)
+                                let delay = 0.3
                                 DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                                     isPreparingOverlay = false
                                     focusedEmotion = emotion
@@ -191,6 +203,17 @@ struct ExploreView: View {
                                 return
                             }
                             appState.selectedEmotions.append(fe)
+                            
+                            // Animate black hole icon
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                blackHoleScale = 1.3
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                                    blackHoleScale = 1.0
+                                }
+                            }
+                            
                             if let idx = emotionsGrid.firstIndex(where: { $0.id == fe.id }) {
                                 withAnimation(.spring()) {
                                     scrollViewProxy?.scrollTo(centerID(for: idx), anchor: .center)
@@ -214,6 +237,8 @@ struct ExploreView: View {
             }
             .onAppear {
                 scrollViewProxy = proxy
+                // Prepare haptic generator
+                hapticGenerator.prepare()
                 // Initialize center emotion
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     updateCenterEmotion()
@@ -250,6 +275,7 @@ struct ExploreView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 44, height: 44)
+                        .scaleEffect(blackHoleScale)
                         .badge(count: appState.selectedEmotions.count)
                 }
                 .padding()
@@ -426,6 +452,17 @@ struct ExploreView: View {
                     xIdx: Int(round(smoothX)),
                     yIdx: Int(round(smoothY))
                 )
+                
+                // Trigger haptic feedback when center emotion ACTUALLY changes (different cell)
+                if let lastCoord = lastHapticCoord {
+                    if lastCoord.xIdx != interpolatedCoord.xIdx || lastCoord.yIdx != interpolatedCoord.yIdx {
+                        hapticGenerator.impactOccurred(intensity: 1.0)  // Full intensity
+                        lastHapticCoord = interpolatedCoord
+                        print("🔔 Haptic triggered: (\(interpolatedCoord.xIdx), \(interpolatedCoord.yIdx))")
+                    }
+                } else {
+                    lastHapticCoord = interpolatedCoord
+                }
                 
                 // Update without animation for smooth continuous movement
                 centerEmotionCoord = interpolatedCoord

@@ -1,4 +1,3 @@
-
 import SwiftUI
 
 struct FocusedEmotionOverlay: View {
@@ -88,7 +87,7 @@ struct FocusedEmotionOverlay: View {
                     }
                     guard isEjecting == false else { return }
                     isEjecting = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         onAdd()
                     }
                 }
@@ -97,7 +96,7 @@ struct FocusedEmotionOverlay: View {
             .scaleEffect(appear ? 1.0 : 0.45)
             .opacity(appear ? 1.0 : 0.0)
             .onAppear {
-                withAnimation(.spring(response: 0.55, dampingFraction: 0.88)) {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                     appear = true
                 }
             }
@@ -106,7 +105,7 @@ struct FocusedEmotionOverlay: View {
         }
         .contentShape(Rectangle())
         .transition(.scale.combined(with: .opacity))
-        .animation(.interactiveSpring(response: 0.35, dampingFraction: 0.85), value: emotion.id)
+        .animation(.interactiveSpring(response: 0.25, dampingFraction: 0.82), value: emotion.id)
     }
 
     // Pick six closest and place them on a circle around the center
@@ -165,6 +164,6 @@ private struct EjectToTopRight: ViewModifier {
                     y: isEjecting ? targetY : 0)
             .scaleEffect(isEjecting ? 0.45 : 1.0)
             .opacity(isEjecting ? 0.0 : 1.0)
-            .animation(.spring(response: 0.5, dampingFraction: 0.82), value: isEjecting)
+            .animation(.spring(response: 0.33, dampingFraction: 0.74), value: isEjecting)
     }
 }
