@@ -1,4 +1,5 @@
 import SwiftUI
+import FoundationModels // keep if you plan to wire Apple FM
 
 struct VisualiseView: View {
     
@@ -18,13 +19,14 @@ struct VisualiseView: View {
     @State private var firstBubblePosition: CGPoint? = nil
 //    @AppStorage("hasSeenVisualiseTutorial")
     @State private var hasSeenTutorial: Bool = false
+
+    // AI output + snapshot of final emotions
+    @State private var aiMessage: String? = nil
+    @State private var emotionSnapshot: [Emotion] = []
     
     // Large bubble configuration
     private let largeBubbleSize: CGFloat = 400
-    private let largeBubbleCenter: CGPoint = CGPoint(
-        x: 200,
-        y: 320
-    )
+    private let largeBubbleCenter: CGPoint = CGPoint(x: 200, y: 320)
     
     // Active colors for animation
     var activeColors: [Color] {
@@ -42,16 +44,11 @@ struct VisualiseView: View {
     
     var body: some View {
         ZStack {
-            Color.black
-                .ignoresSafeArea()
-
-            // Star field fills full screen too
-            cachedBackground
-                .ignoresSafeArea()
+            Color.black.ignoresSafeArea()
+            cachedBackground.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                Spacer()
-                    .frame(height: 150)
+                Spacer().frame(height: 150)
                 
                 // Large bubble with entrance + float + animation
                 ZStack {
@@ -78,30 +75,24 @@ struct VisualiseView: View {
                 .offset(y: bigBubbleFloat)
                 .onAppear {
                     // Entrance
-                    withAnimation(.easeOut(duration: 0.7)) {
-                        bigBubbleAppear = true
-                    }
-                    // Gentle float (kept as is)
+                    withAnimation(.easeOut(duration: 0.7)) { bigBubbleAppear = true }
+                    // Gentle float
                     withAnimation(.easeInOut(duration: 1).repeatForever(autoreverses: true)) {
                         bigBubbleFloat = -14
                     }
-                    
-                    // Show tutorial if first time
+                    // First-time tutorial
                     if !hasSeenTutorial && !appState.selectedEmotions.isEmpty {
-                        showTutorial = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { showTutorial = true }
                     }
                 }
-                .frame(width: largeBubbleSize, height: largeBubbleSize)
 
                 if !appState.selectedEmotions.isEmpty {
-                    Spacer()
-                        .frame(height: 5)
+                    Spacer().frame(height: 5)
                 } else {
-                    Spacer()
-                        .frame(height: 50)
+                    Spacer().frame(height: 50)
                 }
                 
-                // Small bubbles carousel
+                // Small bubbles carousel OR final AI line
                 if !appState.selectedEmotions.isEmpty {
                     SmallBubbleCarousel(
                         emotions: appState.selectedEmotions,
@@ -109,11 +100,8 @@ struct VisualiseView: View {
                         largeBubbleSize: largeBubbleSize,
                         onDragStart: { emotion, position in
                             draggedBubble = (emotion, .zero, position)
-                            // Hide tutorial on first drag
                             if showTutorial {
-                                withAnimation {
-                                    showTutorial = false
-                                }
+                                withAnimation { showTutorial = false }
                                 hasSeenTutorial = true
                             }
                         },
@@ -123,45 +111,41 @@ struct VisualiseView: View {
                             }
                         },
                         onRelease: releaseEmotion,
-                        onDragEnd: {
-                            draggedBubble = nil
-                        },
-                        onFirstBubblePosition: { position in
-                            firstBubblePosition = position
-                        }
+                        onDragEnd: { draggedBubble = nil },
+                        onFirstBubblePosition: { position in firstBubblePosition = position }
                     )
                     .frame(height: 180)
                     .padding(.bottom, 50)
                 } else {
                     VStack(spacing: 60) {
-                        Text("\"Emotions are just visitors,\nlet them come and go\"")
-                            .font(.title3)
-                            .foregroundColor(.white.opacity(0.8))
-                            .multilineTextAlignment(.center)
-                            .lineSpacing(10)
-                            .padding(.horizontal, 32)
-                            .frame(maxWidth: .infinity)
-                            .fixedSize(horizontal: false, vertical: true)
+                        if let line = aiMessage {
+                            Text(line)
+                                .font(.title3)
+                                .foregroundColor(.white.opacity(0.85))
+                                .multilineTextAlignment(.center)
+                                .lineSpacing(10)
+                                .padding(.horizontal, 32)
+                                .frame(maxWidth: .infinity)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } else {
+                            ProgressView("Preparing a note for you…")
+                                .tint(.white)
+                                .foregroundStyle(.white)
+                        }
 
-                        Button(action: {
-                            appState.path.removeAll()
-                        }) {
+                        Button(action: { appState.path.removeAll() }) {
                             Text("Return to Home")
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 40)
                                 .padding(.vertical, 15)
-                                .background(
-                                    Capsule()
-                                        .fill(Color.white.opacity(0.2))
-                                )
+                                .background(Capsule().fill(Color.white.opacity(0.2)))
                         }
                     }
                     .padding(.bottom, 20)
                 }
                 
-                Spacer()
-                    .frame(minHeight: 20)
+                Spacer().frame(minHeight: 20)
             }
             
             // Dragged bubble overlay
@@ -179,15 +163,13 @@ struct VisualiseView: View {
                 )
             }
             
-            // Tutorial Hand Gesture
+            // Tutorial overlay
             if showTutorial, let startPos = firstBubblePosition {
                 HandGestureTutorial(
-                    startPosition: CGPoint(x: startPos.x + 30, y: startPos.y + 30) ,
+                    startPosition: CGPoint(x: startPos.x + 30, y: startPos.y + 30),
                     endPosition: CGPoint(x: largeBubbleCenter.x, y: largeBubbleCenter.y + 50),
                     onDismiss: {
-                        withAnimation {
-                            showTutorial = false
-                        }
+                        withAnimation { showTutorial = false }
                         hasSeenTutorial = true
                     }
                 )
@@ -198,7 +180,10 @@ struct VisualiseView: View {
         .ignoresSafeArea()
     }
     
+    // MARK: - Release logic (safe snapshot → AI)
     func releaseEmotion(_ emotion: Emotion) {
+        var snapshot = appState.selectedEmotions // BEFORE removal
+
         fadingColors.insert(emotion.id)
         draggedBubble = nil
         
@@ -207,6 +192,13 @@ struct VisualiseView: View {
                 appState.selectedEmotions.removeAll { $0.id == emotion.id }
                 fadingColors.remove(emotion.id)
             }
+
+            if snapshot.isEmpty { snapshot = [emotion] } // defensive
+
+            if appState.selectedEmotions.isEmpty {
+                self.emotionSnapshot = snapshot
+                Task { await generateSupportiveMessage(from: snapshot) }
+            }
         }
         
         showEmotionNamePopup(emotion.label)
@@ -214,30 +206,21 @@ struct VisualiseView: View {
     
     func showEmotionNamePopup(_ name: String) {
         currentPopupEmotion = name
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            withAnimation(.easeOut(duration: 0.5)) {
-                currentPopupEmotion = nil
-            }
+            withAnimation(.easeOut(duration: 0.5)) { currentPopupEmotion = nil }
         }
     }
     
     func getDragScale(for dragged: (emotion: Emotion, offset: CGSize, position: CGPoint)) -> CGFloat {
         let currentX = dragged.position.x + dragged.offset.width
         let currentY = dragged.position.y + dragged.offset.height
-        
         let dx = currentX - largeBubbleCenter.x
         let dy = currentY - largeBubbleCenter.y
         let distance = sqrt(dx * dx + dy * dy)
-        
         let maxDistance = largeBubbleSize / 2 + 100
         let minScale: CGFloat = 0.3
         let maxScale: CGFloat = 1.0
-        
-        if distance > maxDistance {
-            return maxScale
-        }
-        
+        if distance > maxDistance { return maxScale }
         let ratio = distance / maxDistance
         return minScale + (maxScale - minScale) * ratio
     }
@@ -245,6 +228,47 @@ struct VisualiseView: View {
     func getDragOpacity(for dragged: (emotion: Emotion, offset: CGSize, position: CGPoint)) -> Double {
         let scale = getDragScale(for: dragged)
         return scale < 0.5 ? Double(scale) : 1.0
+    }
+}
+
+// MARK: - AI message generation (no presets, AI decides)
+extension VisualiseView {
+    @MainActor
+    private func generateSupportiveMessage(from emotions: [Emotion]) async {
+        let labels = emotions
+            .map { $0.label.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+        let emotionList = labels.isEmpty ? "your current state" : labels.joined(separator: ", ")
+
+        let prompt = """
+        You are a gentle, supportive coach. The user just released these emotions: \(emotionList).
+        Write exactly ONE short, supportive sentence (8–18 words), second person (“you”), no emojis, no exclamation marks.
+        Avoid clichés and avoid repeating their words verbatim unless necessary. Output only the sentence.
+        """
+
+        // TODO: Replace the placeholder block below with your actual Foundation Models call.
+        // Keep types out so this compiles even before you add the SDK call.
+        do {
+            // Example (pseudo):
+            // let session = try await SomeFMTextSession(instructions: "Be concise, supportive, non-judgmental.")
+            // let text = try await session.generate(prompt)
+            // self.aiMessage = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            throw NSError(domain: "FM.placeholder", code: -1)
+        } catch {
+            self.aiMessage = fallbackLine(from: labels) // minimal generic fallback
+        }
+
+        #if DEBUG
+        print("AI supportive line for [\(emotionList)]: \(aiMessage ?? "<nil>")")
+        #endif
+    }
+
+    // Minimal generic fallback that builds a single sentence from labels (no preset list).
+    private func fallbackLine(from labels: [String]) -> String {
+        let subject = labels.isEmpty
+            ? "what you feel"
+            : labels.prefix(2).joined(separator: " and ").lowercased()
+        return "You can notice \(subject) and let it move through at your pace."
     }
 }
 
@@ -266,15 +290,11 @@ struct HandGestureTutorial: View {
     
     var body: some View {
         ZStack {
-            // Semi-transparent overlay
             Color.black.opacity(0.5)
                 .ignoresSafeArea()
                 .opacity(opacity)
-                .onTapGesture {
-                    onDismiss()
-                }
+                .onTapGesture { onDismiss() }
             
-            // Animated hand
             Image(systemName: "hand.point.up.left.fill")
                 .font(.system(size: 60))
                 .position(handPosition)
@@ -282,17 +302,12 @@ struct HandGestureTutorial: View {
                 .foregroundColor(.white)
             
             Text("Drag to release")
-                .font(.title)          // chữ nhỏ
-                .foregroundColor(.gray)  // màu xám
+                .font(.title)
+                .foregroundColor(.gray)
                 .opacity(opacity)
-            
-            
         }
         .onAppear {
-            withAnimation(.easeIn(duration: 0.3)) {
-                opacity = 1.0
-            }
-            
+            withAnimation(.easeIn(duration: 0.3)) { opacity = 1.0 }
             animateHand()
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
@@ -302,16 +317,10 @@ struct HandGestureTutorial: View {
     }
     
     private func animateHand() {
-        withAnimation(.easeOut(duration: 0.5)) {
-            handPosition = endPosition
-        }
-        
-        // Return to start and repeat
+        withAnimation(.easeOut(duration: 0.5)) { handPosition = endPosition }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.7) {
             handPosition = startPosition
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                animateHand()
-            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { animateHand() }
         }
     }
 }
@@ -384,27 +393,19 @@ struct DraggableSmallBubble: View {
     private var arcOffset: CGFloat {
        let visibleCount = min(totalCount, 4)
        let arcRadius: CGFloat = -50
-       
-       if visibleCount == 1 {
-           return 0
-       }
-       
+       if visibleCount == 1 { return 0 }
        let midPoint = CGFloat(visibleCount - 1) / 2.0
        let distanceFromCenter = abs(CGFloat(index) - midPoint)
        let normalizedDistance = distanceFromCenter / midPoint
-       let y = arcRadius * normalizedDistance
-       
-       return y
+       return -50 * normalizedDistance
     }
     
     private func isInsideLargeBubble(position: CGPoint, offset: CGSize) -> Bool {
         let currentX = position.x + offset.width
         let currentY = position.y + offset.height
-        
         let dx = currentX - largeBubbleCenter.x
         let dy = currentY - largeBubbleCenter.y
         let distance = sqrt(dx * dx + dy * dy)
-        
         return distance < largeBubbleSize / 2
     }
     
@@ -420,13 +421,9 @@ struct DraggableSmallBubble: View {
                 GeometryReader { geo in
                     Color.clear
                         .onAppear {
-                            // Delay để đảm bảo layout đã hoàn tất
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                 let frame = geo.frame(in: .global)
-                                let center = CGPoint(
-                                    x: frame.midX,
-                                    y: frame.midY + arcOffset
-                                )
+                                let center = CGPoint(x: frame.midX, y: frame.midY + arcOffset)
                                 onPositionReady(center)
                             }
                         }
@@ -444,17 +441,14 @@ struct DraggableSmallBubble: View {
                     }
                     .onEnded { value in
                         isBeingDragged = false
-                        
                         if isInsideLargeBubble(position: value.startLocation, offset: value.translation) {
                             isReleasing.toggle()
                             onRelease(emotion)
-                        }
-                        else {
+                        } else {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
                                 currentOffset = .zero
                             }
                         }
-                        
                         onDragEnd()
                     }
             )
@@ -480,7 +474,6 @@ struct EmotionNamePopup: View {
                     scale = 1.3
                     opacity = 1.0
                 }
-                
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                     withAnimation(.easeInOut(duration: 2)) {
                         scale = 0.8
@@ -549,7 +542,7 @@ struct DynamicLightAnimation: View {
                     .opacity(0.8)
             }
             
-            ForEach(Array(fadingColors.enumerated()), id: \.offset) { index, color in
+            ForEach(Array(fadingColors.enumerated()), id: \.offset) { _, color in
                 Circle()
                     .fill(
                         RadialGradient(
@@ -582,4 +575,9 @@ struct DynamicLightAnimation: View {
             }
         }
     }
+}
+
+#Preview {
+    VisualiseView()
+        .environmentObject(AppState())
 }
