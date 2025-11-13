@@ -388,7 +388,7 @@ extension VisualiseView {
     // Minimal generic fallback
     private func fallbackLine(from labels: [String]) -> String {
         if let first = labels.first, !first.isEmpty {
-            return "You’re steady, acknowledge \(first) and take one small, kind step."
+            return "Emotion are pessenger, let them come and go"
         }
         return "You’re doing your best; notice what you feel and take one gentle step."
     }
