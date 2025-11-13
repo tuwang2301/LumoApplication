@@ -523,15 +523,11 @@ struct GestureTutorialView: View {
                 // Instruction text
                 VStack {
                     Spacer()
-                    Text("Explore it yourself")
+                    Text("Scroll to explore emotions")
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.black.opacity(0.7))
-                        )
-                        .padding(.bottom, 100)
+                        .padding(.bottom, 250)
                 }
             }
         }
