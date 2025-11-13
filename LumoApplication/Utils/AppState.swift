@@ -11,4 +11,6 @@ class AppState: ObservableObject {
     @Published var hasSeenHook = false
     @Published var selectedEmotions: [Emotion] = []
     @Published var path: [String] = []
+    @Published var hasSeenExploreTutorial = false
+    @Published var hasSeenVisualiseTutorial = false
 }

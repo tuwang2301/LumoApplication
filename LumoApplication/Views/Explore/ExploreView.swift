@@ -26,8 +26,8 @@ struct ExploreView: View {
     @State private var scrollOffset: CGPoint = .zero
     
     // Tutorial gesture animation
-//    @AppStorage("hasSeenExploreGestureTutorial")
-    @State private var hasSeenTutorial = false
+////    @AppStorage("hasSeenExploreGestureTutorial")
+//    @State private var hasSeenTutorial = false
     @State private var showTutorial = false
     
 
@@ -146,7 +146,7 @@ struct ExploreView: View {
                                 withAnimation {
                                     showTutorial = false
                                 }
-                                hasSeenTutorial = true
+                                appState.hasSeenExploreTutorial = true
                             }
                         }
                         .onEnded { _ in
@@ -245,7 +245,7 @@ struct ExploreView: View {
                 if showTutorial {
                     GestureTutorialView(
                         showTutorial: $showTutorial,
-                        hasSeenTutorial: $hasSeenTutorial
+                        hasSeenTutorial: $appState.hasSeenExploreTutorial
                     )
                     .zIndex(200)
                     .allowsHitTesting(false)
@@ -263,7 +263,7 @@ struct ExploreView: View {
                 }
                 
                 // Show tutorial if first time
-                if !hasSeenTutorial {
+                if !appState.hasSeenExploreTutorial {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                         withAnimation {
                             showTutorial = true

@@ -19,7 +19,7 @@ struct VisualiseView: View {
     @State private var showTutorial: Bool = false
     @State private var firstBubblePosition: CGPoint? = nil
 //    @AppStorage("hasSeenVisualiseTutorial")
-    @State private var hasSeenTutorial: Bool = false
+//    @State private var hasSeenTutorial: Bool = false
 
     // AI output + snapshot of final emotions
     @State private var aiMessage: String? = nil
@@ -91,7 +91,7 @@ struct VisualiseView: View {
                         bigBubbleFloat = -14
                     }
                     // First-time tutorial
-                    if !hasSeenTutorial && !appState.selectedEmotions.isEmpty {
+                    if !appState.hasSeenVisualiseTutorial && !appState.selectedEmotions.isEmpty {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { showTutorial = true }
                     }
                 }
@@ -112,7 +112,7 @@ struct VisualiseView: View {
                             draggedBubble = (emotion, .zero, position)
                             if showTutorial {
                                 withAnimation { showTutorial = false }
-                                hasSeenTutorial = true
+                                appState.hasSeenVisualiseTutorial = true
                             }
                         },
                         onDragChange: { emotion, offset in
@@ -180,7 +180,7 @@ struct VisualiseView: View {
                     endPosition: CGPoint(x: largeBubbleCenter.x, y: largeBubbleCenter.y + 50),
                     onDismiss: {
                         withAnimation { showTutorial = false }
-                        hasSeenTutorial = true
+                        appState.hasSeenVisualiseTutorial = true
                     }
                 )
             }
